@@ -1,0 +1,9 @@
+# Entorno virtuales y variables de entorno
+.venv
+.env
+
+
+# Archivos python
+__pycache__/
+*.py[cod]
+*.pyo
