@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Platform Sole" />
+    <meta name="author" content="CJR19" />
+    <title> {% block title %} {% endblock %} · Sole </title>
+    <link href="../static/css/layout.css" rel="stylesheet" />
+    <link href="../static/img/saturn.ico" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    {% block head %} {% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href=""{{ url_for('saludo') }}"" class="nav-logo">
+                <div class="logo">
+                    <img src="../static/img/saturno.png" >
+                </div>
+            </a>
+
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Sobre Nosotros</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Servicios</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Contacto</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class='bx  bx-user-circle'  style='color:#1c1b1b'></i></a></li>
+                
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Bienvenido a nuestro rincón pastel</h1>
+            <p>Un diseño limpio, moderno y responsivo para tus ideas.</p>
+        </section>
+        
+        <section class="content">
+
+        <div class="info">
+            {% block info %} {% endblock %}
+        </div>    
+            <h2>Formulario de Proceso</h2>
+            <form class="process-form">
+                <div class="form-group">
+                    <label for="file1">Archivo Principal</label>
+                    <input type="file" id="file1" name="file1">
+                </div>
+                <div class="form-group">
+                    <label for="file2">Archivo Secundario</label>
+                    <input type="file" id="file2" name="file2">
+                </div>
+                <div class="form-group">
+                    <label for="proceso">Tipo de Proceso</label>
+                    <select id="proceso" name="proceso">
+                        <option value="activacion">Activación</option>
+                        <option value="recarga">Recarga</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="percentage">Porcentaje</label>
+                    <input type="number" id="percentage" name="percentage" placeholder="%" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="date">Fecha de Ejecución</label>
+                    <input type="date" id="date" name="date">
+                </div>
+                <button type="submit" class="submit-button">Enviar Proceso</button>
+            </form>
+
+            <div class="results-container">
+                <h2>Resultados de Ejemplo</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Marca</th>
+                                <th>Fecha Activación</th>
+                                <th>IMSI</th>
+                                <th>ICCID</th>
+                                <th>Correo</th>
+                                <th>MSISDN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Telcel</td>
+                                <td>2024-05-10</td>
+                                <td>334020123456789</td>
+                                <td>8952012345678901234</td>
+                                <td>contacto1@email.com</td>
+                                <td>5512345678</td>
+                            </tr>
+                            <tr>
+                                <td>Movistar</td>
+                                <td>2024-05-11</td>
+                                <td>334050987654321</td>
+                                <td>8952098765432109876</td>
+                                <td>contacto2@email.com</td>
+                                <td>5587654321</td>
+                            </tr>
+                            <tr>
+                                <td>AT&T</td>
+                                <td>2024-05-12</td>
+                                <td>334090567890123</td>
+                                <td>8952056789012345678</td>
+                                <td>contacto3@email.com</td>
+                                <td>5555555555</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sole Cybernetic. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="static/js/menu.js"></script>
+</body>
+</html>
