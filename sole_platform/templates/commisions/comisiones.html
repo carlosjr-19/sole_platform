@@ -14,32 +14,121 @@ En esta sección podrás seleccionar un archivo csv de finanzas y un archivo gen
 
 
 {% block info %}
+<!-- Pantalla de carga oculta por defecto -->
+<div id="loader-overlay" style="display: none;">
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Procesando reporte... Por favor espera.</p>
+    </div>
+</div>
 <h2>Formulario de Proceso</h2>
-            <form class="process-form">
-                <div class="form-group">
-                    <label for="file1">Archivo Principal</label>
-                    <input type="file" id="file1" name="file1">
-                </div>
-                <div class="form-group">
-                    <label for="file2">Archivo Secundario</label>
-                    <input type="file" id="file2" name="file2">
-                </div>
-                <div class="form-group">
-                    <label for="proceso">Tipo de Proceso</label>
-                    <select id="proceso" name="proceso">
-                        <option value="activacion">Activación</option>
-                        <option value="recarga">Recarga</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="percentage">Porcentaje</label>
-                    <input type="number" id="percentage" name="percentage" placeholder="%" min="0" max="100">
-                </div>
-                <div class="form-group">
-                    <label for="date">Fecha de Ejecución</label>
-                    <input type="date" id="date" name="date">
-                </div>
-                <button type="submit" class="submit-button">Enviar Proceso</button>
-            </form>
+<form class="process-form" id="comisionesForm" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file1">Archivo Finanzas</label>
+        <input type="file" id="finddoc" name="file_csv" accept=".csv" required>
+    </div>
+    <div class="form-group">
+        <label for="file2">Archivo General</label>
+        <input type="file" id="finddoc" name="file_xlsx" accept=".xlsx" required>
+    </div>
+    <div class="form-group">
+        <label for="comision-sales">¿Recibe comisión adelantada por SALES?</label>
+        <select id="comision-sales" name="comision-sales">
+            <option value="SI">SI</option>
+            <option value="NO">NO</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="proceso">Tipo de Proceso</label>
+        <select id="proceso" name="proceso">
+            <option value="activacion">Activación</option>
+            <option value="recarga">Recarga</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="comision">Comisión</label>
+        <select id="comision" name="comision">
+            <option value="20">20%</option>
+            <option value="15">15%</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input id="fecha" name="fecha" placeholder="19 dec" min="0" max="100">
+    </div>
+    <button type="submit" class="submit-button" value="Generar" formaction="/commissions">Generar Reporte</button>
+</form>
+
+<div id="resultado-container" class="results-container"></div>
+
+{% block script %}
+<script>
+    document.getElementById('comisionesForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Mostrar loader
+    document.getElementById("loader-overlay").style.display = "flex";
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch('/commissions', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en el servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const resultadoDiv = document.getElementById('resultado-container');
+
+        let resultadoHTML = `
+        <h2>📊 Resultado del proceso</h2>
+        <div class="table-wrapper">
+        <table class="tabla-resumen">
+            <tr><th>CSV Finanzas</th><td>${data.csv_finanzas}</td></tr>
+            <tr><th>Excel General</th><td>${data.xlsx_general}</td></tr>
+            <tr><th>Marca</th><td>${data.marca}</td></tr>
+            <tr><th>Comisión Sales</th><td>${data.comision_sales}</td></tr>
+            <tr><th>Proceso</th><td>${data.proceso}</td></tr>
+            <tr><th>Porcentaje</th><td>${data.porcentaje}%</td></tr>
+            <tr><th>Fecha</th><td>${data.fecha}</td></tr>
+            <tr><th>Total en reporte finanzas</th><td>${data.csv_limpio}</td></tr>
+            <tr><th>Total en reporte General</th><td>${data.total_general}</td></tr>
+            <tr><th>Números Duplicados</th><td>${data.num_duplicados}</td></tr>
+            <tr><th>Lista de Duplicados</th><td>${data.lista_duplicados.length > 0 ? data.lista_duplicados.join(', ') : 'Sin duplicados'}</td></tr>
+        </table>
+        </div>
+        <br>
+        <!--<button onclick="window.location.reload()" class="boton">🔄 Nueva operación</button>-->
+        <div id="resultado-descarga"></div>
+        `;
+
+        // Si existe archivo generado, agregar botón de descarga
+        if (data.archivo_generado) {
+            resultadoHTML += `
+            <br>
+            <!--<a href="/descargar/${data.archivo_generado}" id="dwl_button" class="boton" download>📥 Descargar Excel</a>-->
+            <br>
+            <a href="/descargar/Comisiones_act_${data.marca}_${data.fecha}.xlsx" id="dwl_button" class="boton-descarga" download>📥 Descargar Excel</a>
+            `;
+        }
+
+        resultadoDiv.innerHTML = resultadoHTML;
+    })
+    .catch(error => {
+        document.getElementById('resultado-container').innerHTML = `
+        <p style="color:red;">❌ Error: ${error.message}</p>
+        `;
+    }).finally(() => {
+        // Ocultar loader
+        document.getElementById("loader-overlay").style.display = "none";
+    });
+});
+    </script>
+{% endblock %}
 
 {% endblock %}

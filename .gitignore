@@ -2,8 +2,18 @@
 .venv
 .env
 
+#carpetas de almacenamiento
+storage/
+# carpetas de descargas
+downloads/
+
 
 # Archivos python
 __pycache__/
 *.py[cod]
 *.pyo
+
+# archivos 
+*.csv
+*.xlsx
+*.xls
