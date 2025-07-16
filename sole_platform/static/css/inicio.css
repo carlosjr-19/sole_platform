@@ -1,0 +1,102 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.bg-waves {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    padding: 0 2rem;
+    background: linear-gradient(to bottom, #020111, #19163a, #2c2958);
+    /* Noche estrellada */
+    overflow: hidden;
+}
+
+#bg-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.bg-waves-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bg-waves h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.bg-waves p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    color: #f0f8ff;
+    /* AliceBlue, un blanco azulado */
+    font-weight: 300;
+}
+
+/* --- Animación de Olas --- */
+.waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    /* Altura del área de las olas */
+    z-index: 1;
+}
+
+.waves::before,
+.waves::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -50%;
+    /* Inicia fuera de la pantalla para un bucle suave */
+    width: 200%;
+    height: 200px;
+    background-image: url('./../img/wave.png');
+    background-repeat: repeat-x;
+    background-size: 50% 200px;
+    /* La imagen de la ola se repite 2 veces en el ancho del 200% */
+    animation: move-waves 15s linear infinite;
+}
+
+.waves::after {
+    bottom: -5px;
+    /* Ligero desfase para efecto parallax */
+    opacity: 0.6;
+    animation-duration: 25s;
+    animation-direction: reverse;
+}
+
+@keyframes move-waves {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(25%);
+        /* Mueve la mitad de una imagen de ola (50% / 2) */
+    }
+}

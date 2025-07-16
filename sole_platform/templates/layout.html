@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Platform Sole" />
+    <meta name="author" content="CJR19" />
+    <title> {% block title %} {% endblock %} · Sole </title>
+    <link href="../static/css/layout.css" rel="stylesheet" />
+    <link href="../static/img/saturn.ico" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    {% block head %} {% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href=""{{ url_for('inicio') }}"" class="nav-logo">
+                <div class="logo">
+                    <img src="../static/img/saturno.png" >
+                </div>
+            </a>
+
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('inicio') }}" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="{{ url_for('comisiones') }}" class="nav-link">Comisiones</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Servicios</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Contacto</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class='bx  bx-user-circle'></i> </a></li>                
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        
+        <section class="hero">
+            <h1>{% block titulo_h1 %}  {% endblock %} </h1>
+            <p>{% block descripcion %} {% endblock %} </p>
+        </section>
+        
+
+        <section class="content">
+
+        <div class="info">
+            
+        {% block info %} 
+        {% endblock %}
+        </section>
+    </main>
+    
+
+    <footer>
+        <p>&copy; 2025 Sole Cybernetic. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script>
+        const saturnUrl = "{{ url_for('static', filename='img/saturno.png') }}";
+        const palmUrl = "{{ url_for('static', filename='img/palm_silhouette.png') }}";
+    </script>
+</body>
+</html>

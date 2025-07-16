@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block head %} 
+<link href="{{ url_for('static', filename='css/comisiones.css') }}" rel="stylesheet" /> 
+{% endblock %}
+
+{% block title %} Comisiones {% endblock %}
+
+{% block titulo_h1 %} Comisiones de marca {% endblock %}
+{% block descripcion %} 
+En esta sección podrás seleccionar un archivo csv de finanzas y un archivo general (Activaciones/Recargas) junto con los filtros del formulario para poder generar un reporte de finanzas en Excel
+{% endblock %}
+
+
+
+{% block info %}
+<h2>Formulario de Proceso</h2>
+            <form class="process-form">
+                <div class="form-group">
+                    <label for="file1">Archivo Principal</label>
+                    <input type="file" id="file1" name="file1">
+                </div>
+                <div class="form-group">
+                    <label for="file2">Archivo Secundario</label>
+                    <input type="file" id="file2" name="file2">
+                </div>
+                <div class="form-group">
+                    <label for="proceso">Tipo de Proceso</label>
+                    <select id="proceso" name="proceso">
+                        <option value="activacion">Activación</option>
+                        <option value="recarga">Recarga</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="percentage">Porcentaje</label>
+                    <input type="number" id="percentage" name="percentage" placeholder="%" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="date">Fecha de Ejecución</label>
+                    <input type="date" id="date" name="date">
+                </div>
+                <button type="submit" class="submit-button">Enviar Proceso</button>
+            </form>
+
+{% endblock %}

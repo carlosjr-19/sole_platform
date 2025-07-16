@@ -1,21 +1,21 @@
 # Imagen base de Python
-FROM python:3.10-slim
+FROM python:3.12-slim
 
-# Directorio de trabajo
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copiar requirements e instalar dependencias
+# Copiar e instalar las dependencias
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el código fuente
+# Copiar todo el código fuente al contenedor
 COPY . .
 
-# Puerto expuesto (Railway usa $PORT)
+# Exponer el puerto que usará la app (Railway usa $PORT)
 EXPOSE $PORT
 
-# Variables de entorno
+# Definir variable de entorno para el puerto por defecto
 ENV PORT=5000
 
-# Comando para ejecutar con Gunicorn (para producción)
+# Comando para ejecutar Gunicorn (apuntando a app:app)
 CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT app:app"]

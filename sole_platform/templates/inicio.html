@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='css/inicio.css') }}" rel="stylesheet" /> 
+
+{% endblock %}
+
+{% block title %} Inicio {% endblock %}
+{% block titulo_h1 %} Inicio{% endblock %}
+
+{% block descripcion %}
+{% endblock %}
+
+
+
+{% block info %} 
+<section class="bg-waves">
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-waves-content">
+        <h1>Bienvenido a Sole Platform</h1>
+        <p>Un diseño limpio, moderno y responsivo para tus ideas.</p>
+    </div>
+    <div class="waves"></div>
+</section>
+
+<script>
+    document.querySelector(".hero").style.display = "none"; // Oculta la sección hero
+    document.querySelector(".content").style.padding = "0"; // Elimina el padding de la sección content
+</script>
+
+{% endblock %}
+

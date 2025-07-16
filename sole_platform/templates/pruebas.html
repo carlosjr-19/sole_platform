@@ -1,55 +1,16 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Platform Sole" />
-    <meta name="author" content="CJR19" />
-    <title> {% block title %} {% endblock %} · Sole </title>
-    <link href="../static/css/layout.css" rel="stylesheet" />
-    <link href="../static/img/saturn.ico" rel="icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
-    {% block head %} {% endblock %}
-</head>
-<body>
-    <header>
-        <nav class="navbar">
-            <a href=""{{ url_for('saludo') }}"" class="nav-logo">
-                <div class="logo">
-                    <img src="../static/img/saturno.png" >
-                </div>
-            </a>
+{% extends 'layout.html' %}
 
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="#" class="nav-link">Inicio</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Sobre Nosotros</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Servicios</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Contacto</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class='bx  bx-user-circle'  style='color:#1c1b1b'></i></a></li>
-                
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </nav>
-    </header>
+{% block head %}
+<link href="{{ url_for('static', filename='css/pruebas.css') }}" rel="stylesheet" />
+{% endblock %}
 
-    <main>
-        <section class="hero">
-            <h1>Bienvenido a nuestro rincón pastel</h1>
-            <p>Un diseño limpio, moderno y responsivo para tus ideas.</p>
-        </section>
-        
-        <section class="content">
+{% block title %} Pruebas {% endblock %}
 
-        <div class="info">
-            {% block info %} {% endblock %}
-        </div>    
+{% block titulo_h1 %} Página para la generación de pruebas {% endblock %}
+{% block descripcion %} Aquí va el contenido descriptivo para lo que funciona esta sección de la plataforma {% endblock %}
+
+
+{% block info %}
             <h2>Formulario de Proceso</h2>
             <form class="process-form">
                 <div class="form-group">
@@ -121,13 +82,5 @@
                     </table>
                 </div>
             </div>
-        </section>
-    </main>
 
-    <footer>
-        <p>&copy; 2025 Sole Cybernetic. Todos los derechos reservados.</p>
-    </footer>
-
-    <script src="static/js/menu.js"></script>
-</body>
-</html>
+{% endblock %}
