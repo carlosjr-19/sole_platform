@@ -126,6 +126,7 @@ En esta sección podrás seleccionar un archivo csv de finanzas y un archivo gen
     }).finally(() => {
         // Ocultar loader
         document.getElementById("loader-overlay").style.display = "none";
+        fbq('track', 'Purchase', {value: 0.00, currency: 'USD'});
     });
 });
     </script>
