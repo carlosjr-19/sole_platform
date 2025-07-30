@@ -117,6 +117,12 @@ En esta sección podrás seleccionar un archivo csv de finanzas y un archivo gen
             `;
         }
 
+        // META PIXEL CODE
+        if (data.marca == 'Evolink') {
+            // Enviar evento de compra a Meta Pixel
+            fbq('track', 'Purchase', {value: 380.00, currency: 'MXN'});
+        }
+
         resultadoDiv.innerHTML = resultadoHTML;
     })
     .catch(error => {
@@ -126,7 +132,7 @@ En esta sección podrás seleccionar un archivo csv de finanzas y un archivo gen
     }).finally(() => {
         // Ocultar loader
         document.getElementById("loader-overlay").style.display = "none";
-        fbq('track', 'Purchase', {value: 0.00, currency: 'USD'});
+        
     });
 });
     </script>
