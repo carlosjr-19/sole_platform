@@ -1,6 +1,7 @@
 from flask import render_template, redirect, request, jsonify, send_file
 from flask import current_app
 from .services.commissions import report_act as ra
+from .services.commissions import report_rec as rr
 from .services.commissions import clean_folders as clean
 import polars as pl
 import pandas as pd
@@ -109,7 +110,7 @@ def init_app(app):
 
                 print(f"Archivo generado: {nombre_archivo}")
 
-            return jsonify(
+                return jsonify(
                 csv_finanzas=csv_finanzas.filename,
                 xlsx_general=xlsx_general.filename,
                 marca=marca,
@@ -122,7 +123,62 @@ def init_app(app):
                 total_general=act_general,
                 lista_duplicados=duplicados_list,
                 archivo_generado=nombre_archivo,
-            )
+                )
+
+            elif proceso == "recarga":
+
+                print("Entrando al proceso de recarga")
+                print(f"Marca del archivo de finanzas: {marca}!")
+
+                if marca == "Sigma Móvil ":
+                    marca = "Sigma MÃ³vil "
+                    print(f"Entro marca sigma")
+                elif marca == "Gou! Móvil":
+                    marca = "Gou! MÃ³vil"
+                elif marca == "Hey Móvil":
+                    marca = "Hey MÃ³vil"
+
+                # Mostrar recargas de la marca elegida
+                rec_general = (
+                            xlsx.filter(pl.col("name") == marca)
+                            .select(pl.count())
+                            .item()
+                        )
+                print(f"Marca del archivo de finanzas: {rec_general}+")
+
+                # Procesar los archivos
+                resultados = rr.limpiar_archivo_polars(csv, xlsx)
+                csv_limpio = resultados['df1_limpio']
+                total_df1 = resultados['total_df1']
+                total_df2 = rec_general
+                solo_en_df1 = resultados['solo_en_df1']
+                solo_en_df2 = resultados['solo_en_df2']
+                msisdn_eliminados = resultados['msisdn_eliminados']
+                print(f"Total después de limpieza: {total_df1}")
+                print(f"Números eliminados de DataFrame 1 (por empezar con '1'): {msisdn_eliminados}")
+                print(f"Números únicos en DataFrame 1: {len(solo_en_df1)}")
+                print(f"Números únicos en DataFrame 2: {len(solo_en_df2)}")
+
+                return jsonify(
+                    csv_finanzas=csv_finanzas.filename,
+                    xlsx_general=xlsx_general.filename,
+                    marca=marca,
+                    comision_sales=comision_sales,
+                    proceso=proceso,
+                    porcentaje=porcentaje,
+                    fecha=fecha,
+                    total_df1=total_df1,
+                    total_df2=total_df2,
+                    solo_en_df1=list(solo_en_df1),
+                    solo_en_df2=list(solo_en_df2),
+                    msisdn_eliminados=msisdn_eliminados,
+                    csv_limpio=csv_limpio.height
+                )
+                
+                
+
+
+            
         
     @app.route('/descargar/<archivo>')
     def descargar(archivo):
