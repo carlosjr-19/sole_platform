@@ -1,3 +1,155 @@
+/* --- Formulario --- */
+.process-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+.form-group label {
+    margin-bottom: 0;
+    font-weight: 400;
+    color: var(--text-color);
+    flex-basis: 150px;
+    flex-shrink: 0;
+    text-align: left;
+}
+
+.process-form input,
+.process-form select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    background-color: #fff;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    flex-grow: 1;
+    /* Permite que el input ocupe el espacio restante */
+}
+
+.process-form input:focus,
+.process-form select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(167, 197, 235, 0.4);
+}
+
+/* Estilo para los inputs de tipo file */
+.process-form input[type="file"] {
+    padding: 0.5rem;
+}
+
+.process-form input[type="file"]::file-selector-button {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: var(--font-family);
+    margin-right: 1rem;
+}
+
+.process-form input[type="file"]::file-selector-button:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+
+.submit-button {
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    align-self: flex-end;
+    /* Alinea el botón a la derecha */
+}
+
+.submit-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+/* --- Tabla de Resultados --- */
+.results-container {
+    margin-top: 4rem;
+}
+
+.results-container h2 {
+    margin-bottom: 2rem;
+    color: var(--accent-color);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    /* Permite scroll horizontal en pantallas pequeñas */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    background-color: #fff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    white-space: nowrap;
+    /* Evita que el texto de las celdas se parta */
+}
+
+th,
+td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+thead {
+    background-color: var(--secondary-color);
+}
+
+th {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+    background-color: var(--bg-color);
+}
+
+tbody tr:hover {
+    background-color: #e9f1f8;
+    /* Un azul muy claro al pasar el mouse */
+}
+
+
 .boton-descarga {
     display: inline-block;
     padding: 10px 20px;

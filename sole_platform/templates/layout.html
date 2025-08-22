@@ -1,87 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="es"><!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Platform Sole" />
     <meta name="author" content="CJR19" />
-    <title> {% block title %} {% endblock %} · Sole </title>
-    <link href="../static/css/layout.css" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/layout.css') }}" rel="stylesheet" />
     <link href="../static/img/saturn.ico" rel="icon">
+    <title> {% block title %} {% endblock %} · Sole </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    <script type="module" src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+    <!-- Feather icons CDN -->
+    <script src="https://unpkg.com/feather-icons"></script>
     {% block head %} {% endblock %}
-    <!-- Meta Pixel Code -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '528457826976665');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=528457826976665&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <a href=""{{ url_for('inicio') }}"" class="nav-logo">
-                <div class="logo">
-                    <img src="../static/img/saturno.png" >
-                </div>
-            </a>
-
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="{{ url_for('inicio') }}" class="nav-link">Inicio</a></li>
-                <li class="nav-item"><a href="{{ url_for('comisiones') }}" class="nav-link">Comisiones</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Servicios</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Contacto</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class='bx  bx-user-circle'></i> </a></li>                
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </nav>
+    <!-- new: global top header with logo, user name and logout -->
+    <header class="global-header">
+        <div class="header-inner">
+        <div class="top-logo" aria-hidden="true">
+            <img src="../static/img/saturno.png" alt="Saturn logo" class="logo-img" width="28" height="28" />
+        </div>
+        <div class="header-spacer"></div>
+        <div class="header-right">
+            <span class="user-name">Manuel H.</span>
+            <button id="topLogout" class="top-logout" aria-label="Cerrar sesión">
+            <i data-feather="log-out" color="#ffffff"></i>
+            </button>
+        </div>
+        </div>
     </header>
 
-    <main>
-        
-        <section class="hero">
-            <h1>{% block titulo_h1 %}  {% endblock %} </h1>
-            <p>{% block descripcion %} {% endblock %} </p>
-        </section>
-        
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="brand">
+            <span class="brand-name">Sole Cybernetic</span>
+            <!-- new: in-bar toggle visible when sidebar is collapsed/mini -->
+            <button id="sidebarToggleInBar" class="inbar-toggle" aria-label="Abrir menú">
+                <i data-feather="menu"></i>
+            </button>
+            </div>
 
-        <section class="content">
+            <!-- Close button visible when sidebar is opened on smaller screens or via .open -->
 
-        <div class="info">
+            <nav class="menu" aria-label="Main menu">
+            <div class="menu-section">
+                <div class="section-title">Atención</div>
+                <!--<a class="menu-item" href="#" data-page="contracargos">
+                <i data-feather="credit-card"></i><span>Contracargos</span>
+                </a>
+                <a class="menu-item" href="#" data-page="portabilidades">
+                <i data-feather="refresh-cw"></i><span>Portabilidades</span>
+                </a>-->
+            </div>
+
+            <div class="menu-section">
+                <div class="section-title">Administración</div>
+                <a class="menu-item {% if active_page == 'comisiones' %}active{% endif %}" href="{{ url_for('comisiones') }}" data-page="comisiones">
+                <i data-feather="dollar-sign"></i><span>Comisiones</span>
+                </a>
+                <a class="menu-item {% if active_page == 'contracargos' %}active{% endif %}" href="{{ url_for('contracargos') }}" data-page="contracargos">
+                <i data-feather="credit-card"></i><span>Contracargos</span>
+                </a>
+                <!--<a class="menu-item" href="#" data-page="usuarios">
+                <i data-feather="users"></i><span>Usuarios</span>
+                </a>
+                <a class="menu-item" href="#" data-page="config-planes">
+                <i data-feather="settings"></i><span>Planes</span>
+                </a>-->
+            </div>
+
+            <div class="menu-section">
+                <div class="section-title">Operaciones</div>
+                <!--<a class="menu-item" href="#" data-page="reportes">
+                <i data-feather="bar-chart-2"></i><span>Reportes</span>
+                </a>-->
+                <a class="menu-item {% if active_page == 'pruebas' %}active{% endif %}" href="{{ url_for('pruebas') }}" data-page="tareas">
+                <i data-feather="check-circle"></i><span>Tareas</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="section-title">Personalización</div>
+                <!--<a class="menu-item" href="#" data-page="reportes">
+                <i data-feather="bar-chart-2"></i><span>Reportes</span>
+                </a>-->
+                <a class="menu-item" href="#" id="settings" data-page="configuracion">
+                <i data-feather="sliders"></i><span>Configuraciones</span>
+                </a>
+            </div>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <a class="menu-item" href="#" id="settings">
+            <i data-feather="sliders"></i><span>Configuraciones</span>
+            </a>
+            <!--<button class="logout" id="logoutBtn">
+            <i data-feather="log-out"></i><span>Cerrar sesión</span>
+            </button>-->
+        </div>
+        </aside>
+
+        <div class="main">
+        <header class="topbar">
+            <button id="toggleBtn" aria-label="Toggle menu">
+            <i data-feather="menu"></i>
+            </button>
+            <h1 id="pageTitle">{% block titulo_h1 %} {% endblock %} </h1>
             
-        {% block info %} 
-        {% endblock %}
-        </section>
-    </main>
-    
+        </header>
+        <p>{% block descripcion %} {% endblock %}<p>
 
+        <main id="content" class="content">
+            <!-- initial content: a responsive form example -->
+            {% block info %} 
+            {% endblock %}
+        </main>
+        </div>
+    </div>
     <footer>
         <p>&copy; 2025 Sole Cybernetic. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
-    <script>
-        const saturnUrl = "{{ url_for('static', filename='img/saturno.png') }}";
-        const palmUrl = "{{ url_for('static', filename='img/palm_silhouette.png') }}";
-    </script>
+    <!--<script>
+        // Initialize feather icons after DOM is ready
+        document.addEventListener('DOMContentLoaded', function () {
+        if (window.feather) feather.replace();
+        });
+    </script>-->
 </body>
+
+
 </html>
