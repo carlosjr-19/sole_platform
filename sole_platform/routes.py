@@ -19,11 +19,15 @@ def init_app(app):
 
     @app.route("/pruebas")
     def pruebas():
-        return render_template('pruebas.html')
+        return render_template('pruebas.html', active_page="pruebas")
 
     @app.route("/comisiones/")
     def comisiones():
-        return render_template('commisions/comisiones.html')
+        return render_template('commisions/comisiones.html', active_page="comisiones")
+    
+    @app.route("/contracargos/")
+    def contracargos():
+        return render_template('contracargos/contracargos.html', active_page="contracargos")
     
     @app.errorhandler(404)
     def page_not_found(e):
@@ -175,11 +179,6 @@ def init_app(app):
                     csv_limpio=csv_limpio.height
                 )
                 
-                
-
-
-            
-        
     @app.route('/descargar/<archivo>')
     def descargar(archivo):
         if os.environ.get("RAILWAY_ENVIRONMENT"):
