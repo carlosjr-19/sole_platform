@@ -114,9 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // wire top logout to same action as sidebar logout
     if (topLogout) {
-        topLogout.addEventListener('click', () => {
+        topLogout.addEventListener('click', (e) => {
+            e.preventDefault(); // evita que el <a> redirija automáticamente
             if (confirm('¿Cerrar sesión?')) {
-                alert('Sesión cerrada (simulado).');
+                window.location.href = topLogout.parentElement.href; // redirige manualmente
             }
         });
     }

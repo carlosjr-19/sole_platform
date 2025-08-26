@@ -28,10 +28,12 @@
         </div>
         <div class="header-spacer"></div>
         <div class="header-right">
-            <span class="user-name">Manuel H.</span>
+            <span class="user-name"> {{ current_user.fullname }} </span>
+            <a class="logout-link" href="{{ url_for('auth.logout') }}">
             <button id="topLogout" class="top-logout" aria-label="Cerrar sesión">
             <i data-feather="log-out" color="#ffffff"></i>
             </button>
+            </a>
         </div>
         </div>
     </header>
