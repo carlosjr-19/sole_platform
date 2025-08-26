@@ -1,38 +1,41 @@
 from flask import Flask
-from flask_mysqldb import MySQL
+from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
 
-def create_app():
-    
-    load_dotenv()  # Carga variables de entorno desde .env
-    app = Flask(__name__, template_folder="templates", static_folder="static")
-    
-    
-    # Configuraciones
+db = SQLAlchemy()  # instancia global
 
-    # Verificar entorno
+def create_app():
+    load_dotenv()
+    app = Flask(__name__, template_folder="templates", static_folder="static")
+
+    # Config
     if os.getenv("FLASK_ENV") == "production":
         app.config.from_object("config.ProductionConfig")
     else:
         app.config.from_object("config.DevelopmentConfig")
 
-    db = MySQL(app)
+    # URI usando PyMySQL
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
+        f"@{app.config['MYSQL_HOST']}/{app.config['MYSQL_DB']}"
+    )
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Crear carpetas si no existen
+    db.init_app(app)  # Inicializa SQLAlchemy
+
+    # Crear carpetas
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['DOWNLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['IMAGES_FOLDER'], exist_ok=True)
 
-    # Importar y registrar blueprints o las rutas
+    # Rutas y auth
     from . import routes
     routes.init_app(app)
 
-    # importar y registrar autenticación
     from . import auth
     auth.auth_init_app(app, db)
 
-    auth.db = db  # Asignar la instancia de db al blueprint de autenticación 
-    app.db = db  # Asignar la instancia de db a la aplicación principal
+    app.db = db
 
     return app
