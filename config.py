@@ -17,10 +17,10 @@ class DevelopmentConfig(Config):
     ENV = 'development'
     # Configuraciones específicas para desarrollo
     # Ejemplo: Base de datos SQLite para desarrollo
-    MYSQL_HOST = os.getenv("MYSQL_HOST")
-    MYSQL_USER = os.getenv("MYSQL_USER")
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-    MYSQL_DB = os.getenv("MYSQL_DB")
+    MYSQL_HOST = os.getenv("MYSQLHOST")
+    MYSQL_USER = os.getenv("MYSQLUSER")
+    MYSQL_PASSWORD = os.getenv("MYSQLPASSWORD")
+    MYSQL_DB = os.getenv("MYSQLDB")
 
 class ProductionConfig(Config):
     DEBUG = False
@@ -29,4 +29,5 @@ class ProductionConfig(Config):
     MYSQL_USER = os.getenv("MYSQLUSER")
     MYSQL_PASSWORD = os.getenv("MYSQLPASSWORD")
     MYSQL_DB = os.getenv("MYSQLDATABASE")
+    MYSQL_PORT = int(os.getenv("MYSQLPORT", 3306))
 

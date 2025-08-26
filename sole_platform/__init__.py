@@ -12,14 +12,24 @@ def create_app():
     # Config
     if os.getenv("FLASK_ENV") == "production":
         app.config.from_object("config.ProductionConfig")
+        # URI usando PyMySQL
+        app.config['SQLALCHEMY_DATABASE_URI'] = (
+            f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
+            f"@{app.config['MYSQL_HOST']}/{app.config['MYSQL_DB']}"
+        )
     else:
         app.config.from_object("config.DevelopmentConfig")
+        app.config['SQLALCHEMY_DATABASE_URI'] = (
+            f"mysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
+            f"@{app.config['MYSQL_HOST']}:3306/{app.config['MYSQL_DB']}"
+        )
 
-    # URI usando PyMySQL
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
-        f"@{app.config['MYSQL_HOST']}/{app.config['MYSQL_DB']}"
-    )
+        
+#mysql://root:GgnFLyPZvtqcxqdFpZqzBmlJhdcuCTrD@mysql.railway.internal:3306/railway
+
+    print("Entorno: ", os.getenv("FLASK_ENV"))
+
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)  # Inicializa SQLAlchemy
