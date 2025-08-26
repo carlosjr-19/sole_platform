@@ -1,5 +1,6 @@
 from flask import render_template, redirect, request, jsonify, send_file
 from flask import current_app
+from flask_login import LoginManager, login_user, logout_user, login_required
 from .services.commissions import report_act as ra
 from .services.commissions import report_rec as rr
 from .services.commissions import clean_folders as clean
@@ -11,27 +12,35 @@ def init_app(app):
 
     @app.route("/")
     def home():
-        return redirect("/inicio")
+        return "<h1>Welcome to Sole Platform</h1> <a href='/login'>Go to Login</a>"
 
     @app.route("/inicio")
+    @login_required
     def inicio():
         return render_template('inicio.html')
 
     @app.route("/pruebas")
+    @login_required
     def pruebas():
         return render_template('pruebas.html', active_page="pruebas")
 
     @app.route("/comisiones/")
+    @login_required
     def comisiones():
         return render_template('commisions/comisiones.html', active_page="comisiones")
     
     @app.route("/contracargos/")
+    @login_required
     def contracargos():
         return render_template('contracargos/contracargos.html', active_page="contracargos")
     
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('error_404.html'), 404
+    
+    @app.errorhandler(401)
+    def unauthorized(e):
+        return render_template('auth/login.html'), 401
 
     @app.route('/commissions', methods = ['POST'])
     def form_comisiones():

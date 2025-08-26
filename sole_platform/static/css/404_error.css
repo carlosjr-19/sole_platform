@@ -16,9 +16,7 @@ html {
     height: 100vh;
     text-align: center;
     padding: 0 2rem;
-    background: linear-gradient(to bottom, #020111, #19163a, #2c2958);
-    /* Noche estrellada */
-    overflow: hidden;
+
 }
 
 #bg-canvas {
@@ -41,7 +39,7 @@ html {
 .bg-waves h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
-    color: #fff;
+    color: #111111;
     font-weight: 600;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -50,7 +48,7 @@ html {
     font-size: 1.2rem;
     margin-bottom: 2rem;
     max-width: 600px;
-    color: #f0f8ff;
+    color: #000000;
     /* AliceBlue, un blanco azulado */
     font-weight: 300;
 }
