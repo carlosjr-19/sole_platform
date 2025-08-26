@@ -20,7 +20,7 @@ def create_app():
     else:
         app.config.from_object("config.DevelopmentConfig")
         app.config['SQLALCHEMY_DATABASE_URI'] = (
-            f"mysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
+            f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
             f"@{app.config['MYSQL_HOST']}:3306/{app.config['MYSQL_DB']}"
         )
 
