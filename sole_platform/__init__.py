@@ -9,23 +9,26 @@ def create_app():
     load_dotenv()
     app = Flask(__name__, template_folder="templates", static_folder="static")
 
-    # Config
-    if os.getenv("FLASK_ENV") == "production":
+    # Detecta entorno: primero FLASK_ENV, si no existe usa RAILWAY_ENVIRONMENT
+    env = os.getenv("FLASK_ENV") or os.getenv("RAILWAY_ENVIRONMENT") or "development"
+    print("Entorno detectado:", env)  # 👀 Útil para logs en Railway
+
+    if env == "production":
         app.config.from_object("config.ProductionConfig")
-        # URI usando PyMySQL
-        app.config['SQLALCHEMY_DATABASE_URI'] = (
-            f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
-            f"@{app.config['MYSQL_HOST']}/{app.config['MYSQL_DB']}"
-        )
+        db_url = os.getenv("MYSQL_URL")
+        if not db_url:
+            raise RuntimeError("MYSQL_URL no está definido en Railway")
+        if db_url.startswith("mysql://"):
+            db_url = db_url.replace("mysql://", "mysql+pymysql://", 1)
+        app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     else:
         app.config.from_object("config.DevelopmentConfig")
         app.config['SQLALCHEMY_DATABASE_URI'] = (
-            f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
+            f"mysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
             f"@{app.config['MYSQL_HOST']}:3306/{app.config['MYSQL_DB']}"
         )
-
         
-#mysql://root:GgnFLyPZvtqcxqdFpZqzBmlJhdcuCTrD@mysql.railway.internal:3306/railway
+    #mysql://root:GgnFLyPZvtqcxqdFpZqzBmlJhdcuCTrD@mysql.railway.internal:3306/railway
 
     print("Entorno: ", os.getenv("FLASK_ENV"))
 
