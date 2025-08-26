@@ -1,22 +1,18 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from sole_platform import db
 
-class User(UserMixin):
-    def __init__(self, id, email, password, fullname="") -> None:
-        self.id = id
-        self.email = email
-        self.password = password
-        self.fullname = fullname
+class User(db.Model, UserMixin):
+    __tablename__ = "users"
 
-    @classmethod
-    def check_password(self, hashed_password, password):
-        # Aquí deberías implementar la verificación de la contraseña
-        # Por ejemplo, si usas hashing:
-        return check_password_hash(hashed_password, password)
-    
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    fullname = db.Column(db.String(200))
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
     @staticmethod
     def generate_hash(password):
         return generate_password_hash(password)
-    
-#print(generate_password_hash("brasil0812"))  # Ejemplo de cómo generar un hash de contraseña
-#print(generate_password_hash("123456"))  # Ejemplo de cómo generar un hash de contraseña
