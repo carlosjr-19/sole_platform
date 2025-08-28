@@ -28,10 +28,6 @@ def create_app():
             f"@{app.config['MYSQL_HOST']}:3306/{app.config['MYSQL_DB']}"
         )
         
-    #mysql://root:GgnFLyPZvtqcxqdFpZqzBmlJhdcuCTrD@mysql.railway.internal:3306/railway
-
-    print("Entorno: ", os.getenv("FLASK_ENV"))
-
     
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -50,5 +46,8 @@ def create_app():
     auth.auth_init_app(app, db)
 
     app.db = db
+
+    with app.app_context():
+        db.create_all()  # 🔥 Crea las tablas si no existen
 
     return app

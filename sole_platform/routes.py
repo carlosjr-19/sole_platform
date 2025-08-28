@@ -1,9 +1,13 @@
-from flask import render_template, redirect, request, jsonify, send_file
+from flask import render_template, redirect, request, jsonify, send_file, flash, url_for
 from flask import current_app
 from flask_login import LoginManager, login_user, logout_user, login_required
+from datetime import datetime, timedelta
 from .services.commissions import report_act as ra
 from .services.commissions import report_rec as rr
 from .services.commissions import clean_folders as clean
+from .models.ModelsContracargos import ModelContracargo
+from .models.entities.contracargos import Contracargo
+from . import db
 import polars as pl
 import pandas as pd
 import os
@@ -29,11 +33,6 @@ def init_app(app):
     def comisiones():
         return render_template('commisions/comisiones.html', active_page="comisiones")
     
-    @app.route("/contracargos/")
-    @login_required
-    def contracargos():
-        return render_template('contracargos/contracargos.html', active_page="contracargos")
-    
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('error_404.html'), 404
@@ -41,6 +40,123 @@ def init_app(app):
     @app.errorhandler(401)
     def unauthorized(e):
         return render_template('auth/login.html'), 401
+    
+    @app.route("/contracargos/")
+    @login_required
+    def list_contracargos():
+        page = request.args.get("page", 1, type=int)  # número de página
+        search = request.args.get("search", None)     # búsqueda por nombre
+
+        per_page = 10  # cuántos por página
+
+        try:
+            if search:  
+                pagination = ModelContracargo.search_contracargos_by_name(search, page, per_page)
+            else:
+                pagination = ModelContracargo.get_all_contracargos(page, per_page)
+
+            contracargos = pagination.items  
+            total_pages = pagination.pages  
+
+            return render_template(
+                "contracargos/contracargos.html",
+                active_page="contracargos",
+                contracargos=contracargos,
+                page=page,
+                total_pages=total_pages,
+                search=search
+            )
+
+        except Exception as e:
+            print("Error en list_contracargos:", str(e))
+            return render_template(
+                "contracargos/contracargos.html",
+                active_page="contracargos",
+                contracargos=[],
+                page=1,
+                total_pages=1,
+                search=None
+            )
+        
+    @app.route("/contracargos/add", methods=["GET", "POST"])
+    @login_required
+    def add_contracargo():
+        if request.method == "POST":
+            print("POST request to /contracargos/add")
+            print("Form data received:", request.form.get("name"), request.form.get("email"), request.form.get("msisdn"), request.form.get("monto"), request.form.get("marca"), request.form.get("ord_pay"), request.form.get("paid"), request.form.get("descripcion"))
+
+            name = request.form.get("name")
+            email = request.form.get("email")
+            msisdn = request.form.get("msisdn")
+            monto = request.form.get("monto")
+            marca = request.form.get("marca")
+            ord_pay = request.form.get("ord_pay")
+            paid_str = request.form.get("paid")
+            descripcion = request.form.get("descripcion")
+
+            #obtener la fecha actual
+            date = datetime.now().strftime('%Y-%m-%d') 
+
+            if paid_str == "yes":
+                paid = True
+            else:
+                paid = False
+
+            nuevo = Contracargo(
+                name=name,
+                msisdn=msisdn,
+                ord_pay=ord_pay,
+                email=email,
+                monto=monto,
+                marca=marca,
+                paid= paid,
+                date_inserted=date,
+                descripcion=descripcion
+            )
+
+            try:
+                ModelContracargo.add_contracargo(nuevo)
+                print("Contracargo agregado exitosamente")
+                flash("Contracargo agregado con éxito", "success")
+                return redirect(url_for("list_contracargos"))
+            except Exception as e:
+                print("Error al agregar contracargo:", str(e))
+                flash(f"Error: {str(e)}", "danger")
+        else:
+            print("GET request to /contracargos/add")
+
+        return render_template("contracargos/add_contracargo.html")
+    
+    @app.route("/contracargos/edit/<int:contracargo_id>", methods=["GET", "POST"])
+    @login_required
+    def edit_contracargo(contracargo_id):
+        contracargo = Contracargo.query.get_or_404(contracargo_id)
+        if request.method == "POST":
+            name = request.form.get("name")
+            email = request.form.get("email")
+
+            try:
+                ModelContracargo.edit_contracargo(contracargo_id, name, email)
+                flash("Contracargo editado con éxito", "success")
+                return redirect(url_for("list_contracargos"))
+            except Exception as e:
+                flash(f"Error: {str(e)}", "danger")
+
+        return render_template("contracargos/edit_contracargo.html", contracargo=contracargo)
+    
+    @app.route('/delete_contracargo/<int:contracargo_id>', methods = ['GET', 'POST'])
+    def delete_contracargo(contracargo_id):
+        # Obtén la clave ingresada por el usuario
+        entered_password = request.form.get('password')
+
+        if entered_password == os.getenv("SECRET_DELETE_KEY"):
+            # Elimina el contracargo si la clave es correcta
+            ModelContracargo.delete_contracargo(contracargo_id)
+            flash("El registro se eliminó correctamente.", "success")
+        else:
+            flash("Clave incorrecta. No se pudo eliminar el registro.", "danger")
+
+        return redirect(url_for('list_contracargos'))
 
     @app.route('/commissions', methods = ['POST'])
     def form_comisiones():
