@@ -16,5 +16,5 @@ class User(db.Model, UserMixin):
     @staticmethod
     def generate_hash(password):
         return generate_password_hash(password)
-
+#
 #print(generate_password_hash("brasil0812"))  # Ejemplo de uso

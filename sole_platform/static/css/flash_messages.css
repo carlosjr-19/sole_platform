@@ -1,0 +1,23 @@
+.message-danger {
+    background-color: rgb(240, 110, 110);
+    height: 40px;
+    color: white;
+    padding-top: 10px;
+    border-radius: 8px;
+}
+
+.message-success {
+    background-color: rgb(110, 240, 110);
+    height: 64px;
+    color: white;
+    padding-top: 10px;
+    border-radius: 8px;
+}
+
+.message-warning {
+    background-color: rgb(240, 200, 110);
+    height: 40px;
+    color: white;
+    padding-top: 10px;
+    border-radius: 8px;
+}

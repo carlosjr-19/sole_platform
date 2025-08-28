@@ -1,0 +1,286 @@
+:root {
+    --primary: #2196F3;
+    --secondary: #FFC107;
+    --dark: #1976D2;
+    --light: #BBDEFB;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main {
+    overflow: auto;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.btn-add {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    transition: background 0.3s ease;
+    margin-right: 10px;
+}
+
+.header-actions a {
+    text-decoration: none;
+    color: #f5f5f5;
+}
+
+.btn-add:hover {
+    background: var(--dark);
+}
+
+.search-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    animation: slideDown 0.5s ease;
+    margin-right: 10px;
+}
+
+.search-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.search-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-search {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+.btn-search:hover {
+    background: var(--dark);
+}
+
+.boton {
+    text-decoration: none;
+    font-size: 22px;
+}
+
+/* FLASH MESSAGES */
+.message-danger {
+    background-color: rgb(240, 110, 110);
+    height: 40px;
+    color: white;
+    margin-top: 0px;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    margin-right: 20px;
+    margin-bottom: 0px;
+    border-radius: 8px;
+}
+
+.message-success {
+    background-color: rgb(110, 240, 110);
+    height: 48px;
+    color: white;
+    margin-top: 0px;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    margin-right: 20px;
+    margin-bottom: 0px;
+    border-radius: 8px;
+}
+
+.message-warning {
+    background-color: rgb(240, 200, 110);
+    height: 40px;
+    color: white;
+    padding-top: 10px;
+    border-radius: 8px;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+input {
+    width: 100%;
+    padding: 12px 35px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--light);
+}
+
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    animation: fadeIn 0.5s ease;
+    margin-right: 10px;
+    margin-bottom: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: var(--primary);
+    color: white;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+}
+
+tr:hover {
+    background: #f8f9fa;
+    transition: background 0.3s ease;
+}
+
+tr:nth-child(even) {
+    background: #f5f5f5;
+}
+
+.btn-edit,
+.btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 5px;
+    color: var(--primary);
+    transition: color 0.3s ease;
+}
+
+.btn-delete {
+    color: #dc3545;
+}
+
+.btn-edit:hover {
+    color: var(--dark);
+}
+
+.btn-delete:hover {
+    color: #c82333;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    gap: 5px;
+}
+
+.pagination button {
+    background: white;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+    background: var(--light);
+}
+
+.pagination button .active {
+    background: var(--primary);
+    color: white;
+}
+
+.pagination button:disabled {
+    background: #eee;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #ddd;
+}
+
+@media (max-width: 500px) {
+    .main {
+        padding-left: 10px;
+    }
+
+
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        grid-template-columns: 1fr;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+}
