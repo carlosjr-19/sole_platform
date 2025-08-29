@@ -45,15 +45,30 @@ def init_app(app):
     @login_required
     def list_contracargos():
         page = request.args.get("page", 1, type=int)  # número de página
-        search = request.args.get("search", None)     # búsqueda por nombre
+        #search = request.args.get("search", None)     # búsqueda por nombre
+        #fecha_desde = request.args.get("fecha_desde")
+        #fecha_hasta = request.args.get("fecha_hasta")
 
-        per_page = 10  # cuántos por página
+        per_page = 5  # cuántos por página
 
         try:
-            if search:  
-                pagination = ModelContracargo.search_contracargos_by_name(search, page, per_page)
-            else:
-                pagination = ModelContracargo.get_all_contracargos(page, per_page)
+            """if search: 
+                
+                pagination = ModelContracargo.search_contracargos_by_name(search, fecha_desde, fecha_hasta, page, per_page)
+                
+
+                print(f"Busqueda: {search}, Fecha desde: {fecha_desde}, Fecha hasta: {fecha_hasta}")
+
+            elif fecha_desde and fecha_hasta:
+                # ✅ Convertir fechas si existen
+                fecha_desde_dt = datetime.strptime(fecha_desde, "%Y-%m-%d") if fecha_desde else None
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, "%Y-%m-%d") if fecha_hasta else None
+                
+                pagination = ModelContracargo.search_contracargos_by_date(fecha_desde_dt, fecha_hasta_dt, page, per_page)
+                print(f"Búsqueda por fecha: Desde {fecha_desde} hasta {fecha_hasta}")
+                        
+            else:"""
+            pagination = ModelContracargo.get_all_contracargos(page, per_page)
 
             contracargos = pagination.items  
             total_pages = pagination.pages  
@@ -64,7 +79,7 @@ def init_app(app):
                 contracargos=contracargos,
                 page=page,
                 total_pages=total_pages,
-                search=search
+                #search=search
             )
 
         except Exception as e:
@@ -125,24 +140,30 @@ def init_app(app):
         else:
             print("GET request to /contracargos/add")
 
-        return render_template("contracargos/add_contracargo.html")
+        return render_template("contracargos/add_contracargo.html", active_page="contracargos",)
     
     @app.route("/contracargos/edit/<int:contracargo_id>", methods=["GET", "POST"])
     @login_required
     def edit_contracargo(contracargo_id):
         contracargo = Contracargo.query.get_or_404(contracargo_id)
         if request.method == "POST":
-            name = request.form.get("name")
-            email = request.form.get("email")
+            ord_pay = request.form.get("ord_pay")
+            paid = request.form.get("paid")
+            descripcion = request.form.get("comentario")
+
+            if paid == "yes":
+                paid = True
+            else:
+                paid = False
 
             try:
-                ModelContracargo.edit_contracargo(contracargo_id, name, email)
+                ModelContracargo.edit_contracargo(contracargo_id, ord_pay, paid, descripcion)
                 flash("Contracargo editado con éxito", "success")
                 return redirect(url_for("list_contracargos"))
             except Exception as e:
                 flash(f"Error: {str(e)}", "danger")
 
-        return render_template("contracargos/edit_contracargo.html", contracargo=contracargo)
+        return render_template("contracargos/edit_contracargo.html", contracargo=contracargo, active_page="contracargos",)
     
     @app.route('/delete_contracargo/<int:contracargo_id>', methods = ['GET', 'POST'])
     def delete_contracargo(contracargo_id):
@@ -157,6 +178,41 @@ def init_app(app):
             flash("Clave incorrecta. No se pudo eliminar el registro.", "danger")
 
         return redirect(url_for('list_contracargos'))
+    
+    @app.route('/search', methods=["GET", "POST"])
+    def search_contracargo():
+        print("POST request to /search")
+        
+        busqueda = request.args.get('search', '').strip()
+        fecha_desde = request.args.get('fecha_desde')
+        fecha_hasta = request.args.get('fecha_hasta')
+
+        print(f"Busqueda: {busqueda}, Fecha desde: {fecha_desde}, Fecha hasta: {fecha_hasta}")
+
+        page = int(request.args.get('page', 1))
+        per_page = 5
+
+        # ✅ Convertir fechas si existen
+        fecha_desde_dt = datetime.strptime(fecha_desde, "%Y-%m-%d") if fecha_desde else None
+        fecha_hasta_dt = datetime.strptime(fecha_hasta, "%Y-%m-%d") if fecha_hasta else None
+
+        # 🔹 Llamamos siempre a la función unificada
+        pagination = ModelContracargo.search_contracargos(busqueda, fecha_desde_dt, fecha_hasta_dt, page, per_page)
+
+        contracargos = pagination.items
+        total_pages = pagination.pages
+
+        return render_template(
+            "contracargos/contracargos.html",
+            active_page="contracargos",
+            contracargos=contracargos,
+            page=page,
+            total_pages=total_pages,
+            search=busqueda
+        )
+
+
+
 
     @app.route('/commissions', methods = ['POST'])
     def form_comisiones():

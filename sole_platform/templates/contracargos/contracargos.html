@@ -38,10 +38,10 @@ En esta sección podrás observar la lista de contracargos con cada uno de sus d
 
 
 <div class="search-container">
-    <form class="search-form" method="GET" action="">
+    <form class="search-form" method="GET" action"{{ url_for('search_contracargo') }}">
         <div class="form-group">
             <i class="fas fa-search"></i>
-            <input type="text" id="search" name="search" placeholder="Buscar por nombre...">
+            <input type="text" id="search" name="search" placeholder="Buscar">
         </div>
         <div class="form-group">
             <i class="fas fa-calendar"></i>
@@ -51,7 +51,7 @@ En esta sección podrás observar la lista de contracargos con cada uno de sus d
             <i class="fas fa-calendar"></i>
             <input type="date" id="fecha_hasta" name="fecha_hasta" placeholder="Fecha hasta">
         </div>
-        <input class="btn-search" type="submit" value="Buscar">
+        <input class="btn-search" type="submit" value="Buscar" formaction="{{ url_for('search_contracargo') }}">
     </form>
 </div>
 
@@ -77,8 +77,7 @@ En esta sección podrás observar la lista de contracargos con cada uno de sus d
                     <td>{{ contracargo.ord_pay }}</td>
                     <td>{{ contracargo.date_inserted }}</td>
                     <td>
-                        <!--<a href="{{ url_for('edit_contracargo', contracargo_id=contracargo.id) }}"class="boton">-->
-                        <a href="" class="boton">
+                        <a href="{{ url_for('edit_contracargo', contracargo_id=contracargo.id) }}" class="boton">
                             <i class='bx bxs-message-square-edit' style='color:#1bde57'></i>
                         </a>
                         <button onclick="openDeleteModal({{ contracargo.id }})" class="boton" style="background: none; border: none; cursor: pointer;">
@@ -106,20 +105,24 @@ En esta sección podrás observar la lista de contracargos con cada uno de sus d
 </div>
 <div class="pagination">
     {% if page > 1 %}
-        <a href="{{ url_for('list_contracargos', page=page-1) }}"><button>&laquo; Anterior</button></a>
+        <a href="{{ url_for('list_contracargos', page=page-1, search=search, fecha_desde=request.args.get('fecha_desde'), fecha_hasta=request.args.get('fecha_hasta')) }}">
+            <button>&laquo; Anterior</button>
+        </a>
     {% endif %}
 
     {% for p in range(1, total_pages + 1) %}
-        <a href="{{ url_for('list_contracargos', page=p) }}"
-            class="{% if p == page %}active{% endif %}">
+        <a href="{{ url_for('list_contracargos', page=p, search=search, fecha_desde=request.args.get('fecha_desde'), fecha_hasta=request.args.get('fecha_hasta')) }}"
+        class="{% if p == page %}active{% endif %}">
             <button>
-            {{ p }}
+                {{ p }}
             </button>
         </a>
     {% endfor %}
 
     {% if page < total_pages %}
-    <a href="{{ url_for('list_contracargos', page=page+1) }}"><button>Siguiente &raquo;</button></a>
+        <a href="{{ url_for('list_contracargos', page=page+1, search=search, fecha_desde=request.args.get('fecha_desde'), fecha_hasta=request.args.get('fecha_hasta')) }}">
+            <button>Siguiente &raquo;</button>
+        </a>
     {% endif %}
 </div>
 

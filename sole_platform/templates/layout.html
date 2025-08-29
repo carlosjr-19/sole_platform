@@ -7,7 +7,7 @@
     <meta name="description" content="Platform Sole" />
     <meta name="author" content="CJR19" />
     <link href="{{ url_for('static', filename='css/layout.css') }}" rel="stylesheet" />
-    <link href="../static/img/saturn.ico" rel="icon">
+    <link href="{{ url_for('static', filename='img/saturn.ico') }}" rel="icon">
     <title> {% block title %} {% endblock %} · Sole </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
     <header class="global-header">
         <div class="header-inner">
         <div class="top-logo" aria-hidden="true">
-            <img src="../static/img/saturno.png" alt="Saturn logo" class="logo-img" width="28" height="28" />
+            <img src="{{ url_for('static', filename='img/saturno.png') }}" alt="Saturn logo" class="logo-img" width="28" height="28" />
         </div>
         <div class="header-spacer"></div>
         <div class="header-right">

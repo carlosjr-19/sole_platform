@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block head %} 
+    <link href="{{ url_for('static', filename='css/add_contracargo.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block title %}Editar Contracargo{% endblock %}
+
+{% block titulo_h1 %} Editar Contracargo {% endblock %}
+{% block descripcion %} En esta sección podrás editar los detalles del contracargo seleccionado. 
+{% endblock %}
+
+{% block info %}
+<div class="contenedor">
+    <form id="chargebackForm" method='POST'>
+        <div class="form-group">
+            <label for="clientName">Nombre</label>
+            <input type="text" id="clientName" name="name" value="{{ contracargo.name }}" disabled>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo</label>
+            <input type="text" id="clientEmail" name="email" value="{{ contracargo.email }}" disabled>
+        </div>
+
+        <div class="form-group">
+            <label for="msisdn">MSISDN</label>
+            <input type="text" id="msisdn" name="msisdn" value="{{ contracargo.msisdn }}" disabled>
+        </div>
+
+        <div class="form-group">
+            <label for="ordPay">Marca</label>
+            <input type="text" id="marca" name="marca" value="{{ contracargo.marca }}" disabled>
+        </div>
+
+        <div class="form-group">
+            <label for="ordPay">Orden de Pago</label>
+            <input type="text" id="ordPay" name="ord_pay" value="{{ contracargo.ord_pay }}">
+        </div>
+
+        <div class="form-group">
+            <label for="ordPay">Monto</label>
+            <input type="text" id="monto" name="monto" value="{{ contracargo.monto }}" disabled>
+        </div>
+
+        <div class="form-group">
+            <label for="paid">¿Pagado?</label>
+            <select id="paid" name="paid">
+                <option value="yes" {% if contracargo.paid %}selected{% endif %}>Sí</option>
+                <option value="no" {% if not contracargo.paid %}selected{% endif %}>No</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="comments">Comentarios</label>
+            <textarea id="comments" name="comentario" placeholder="Ingrese sus comentarios aquí...">{{ contracargo.descripcion }}</textarea>
+        </div>
+
+        <button class="button-add" type="submit" value="Enviar">Actualizar</button>
+    </form>
+</div>
+
+{% endblock %}
