@@ -1,9 +1,11 @@
 from flask import Flask
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
 
 db = SQLAlchemy()  # instancia global
+migrate = Migrate() # instancia global
 
 def create_app():
     load_dotenv()
@@ -32,6 +34,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)  # Inicializa SQLAlchemy
+    migrate.init_app(app, db)  # Inicializa Flask-Migrate
 
     # Crear carpetas
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

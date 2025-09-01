@@ -10,6 +10,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(200), nullable=False)
     fullname = db.Column(db.String(200))
 
+    # campo con roles
+    role = db.Column(db.String(50), default="user")  # roles: user, admin
+
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
