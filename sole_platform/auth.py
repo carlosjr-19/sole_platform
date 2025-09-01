@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from .models.ModelsUsers import ModelUser
 from .models.entities.users import User
 
@@ -19,6 +19,10 @@ def auth_init_app(app, database):
 # --- Rutas ---
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+
+    if current_user.is_authenticated:
+        return redirect(url_for("inicio"))
+
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
@@ -31,6 +35,7 @@ def login():
         else:
             flash("Email o contraseña incorrectos", "danger")
             return render_template("auth/login.html")
+
     return render_template("auth/login.html")
 
 @auth_bp.route("/logout")
