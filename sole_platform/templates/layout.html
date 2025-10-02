@@ -20,6 +20,20 @@
     {% block head %} {% endblock %}
 </head>
 <body>
+    <!-- Mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div id="flash-messages">
+        {% for message in messages %}
+            <div class="flash-message {{ message[0] }}">
+            {{ message[1] }}
+            <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
     <!-- new: global top header with logo, user name and logout -->
     <header class="global-header">
         <div class="header-inner">
@@ -60,6 +74,9 @@
                 <a class="menu-item" href="#" data-page="portabilidades">
                 <i data-feather="refresh-cw"></i><span>Portabilidades</span>
                 </a>-->
+                <a class="menu-item {% if active_page == 'preactivar' %}active{% endif %}" href="{{ url_for('preactivaciones') }}" data-page="preactivar">
+                <i data-feather="smartphone"></i><span>Preactivar Línea</span>
+                </a>
             </div>
 
             <div class="menu-section">
@@ -131,12 +148,15 @@
         <p>&copy; 2025 Sole Cybernetic. Todos los derechos reservados.</p>
     </footer>
 
-    <!--<script>
-        // Initialize feather icons after DOM is ready
-        document.addEventListener('DOMContentLoaded', function () {
-        if (window.feather) feather.replace();
-        });
-    </script>-->
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(el => {
+                el.style.transition = "opacity 0.5s ease";
+                el.style.opacity = "0";
+                setTimeout(() => el.remove(), 2000);
+            });
+        }, 5000);
+    </script>
 </body>
 
 

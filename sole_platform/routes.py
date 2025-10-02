@@ -180,6 +180,7 @@ def init_app(app):
         return redirect(url_for('list_contracargos'))
     
     @app.route('/search', methods=["GET", "POST"])
+    @login_required
     def search_contracargo():
         print("POST request to /search")
         
@@ -215,6 +216,7 @@ def init_app(app):
 
 
     @app.route('/commissions', methods = ['POST'])
+    @login_required
     def form_comisiones():
         if request.method == 'POST':
 
@@ -361,6 +363,7 @@ def init_app(app):
                 )
                 
     @app.route('/descargar/<archivo>')
+    @login_required
     def descargar(archivo):
         if os.environ.get("RAILWAY_ENVIRONMENT"):
             ruta_archivo = os.path.join("/tmp", archivo)
@@ -370,3 +373,29 @@ def init_app(app):
         print(f"[DEBUG] Intentando descargar: {ruta_archivo}")
 
         return send_file(ruta_archivo, as_attachment=True)
+    
+    @app.route('/preactivaciones')
+    @login_required
+    def preactivaciones():
+        return render_template('scrapping/preactivar.html', active_page="preactivar")
+    
+    @app.route('/perform_preactivation', methods=['POST'])
+    @login_required
+    def perform_preactivation():
+        if request.method == 'POST':
+            msisdn = request.form.get('numero')
+            print(f"MSISDN recibido: {msisdn}")
+
+            from .services.scrapping import preactivar
+
+            resultado = preactivar.preactivar_linea(msisdn)
+
+            print(resultado)
+            print(resultado["status"])
+
+            flash(resultado["message"], "success" if resultado["status"] == "success" else "danger")
+
+            return redirect(url_for('preactivaciones', active_page="preactivar"))
+        
+        else:
+            return redirect(url_for('preactivaciones', active_page="preactivar"))

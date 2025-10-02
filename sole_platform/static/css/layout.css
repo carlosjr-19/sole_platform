@@ -466,6 +466,74 @@ footer {
     margin-top: auto;
 }
 
+/* FLASH MESSAGES */
+#flash-messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.flash-message {
+    padding: 15px 20px;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    animation: slide-in 0.4s ease-out;
+    position: relative;
+    min-width: 250px;
+    max-width: 350px;
+}
+
+.flash-message .close-btn {
+    position: absolute;
+    top: 8px;
+    /* separación superior */
+    right: 10px;
+    /* separación derecha */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.flash-message.success {
+    background-color: #28a745;
+    /* verde */
+}
+
+.flash-message.danger {
+    background-color: #dc3545;
+    /* rojo */
+}
+
+.flash-message.not_found {
+    background-color: #e68b0b;
+    /* anaranjado */
+}
+
+.close-btn {
+    margin-left: 15px;
+    font-weight: bold;
+    float: right;
+    cursor: pointer;
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
 /* Responsive behavior */
 @media (max-width: 900px) {
 

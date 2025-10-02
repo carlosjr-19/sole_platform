@@ -23,8 +23,10 @@ openpyxl==3.1.5
 packaging==25.0
 pandas==2.3.1
 pillow==11.3.0
+playwright==1.55.0
 polars==1.31.0
 pyarrow==20.0.0
+pyee==13.0.0
 PyMySQL==1.1.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1

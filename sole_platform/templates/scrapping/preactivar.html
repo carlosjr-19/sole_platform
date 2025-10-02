@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block head %} 
+<link href="{{ url_for('static', filename='css/comisiones.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block title %} Preactivar DN {% endblock %}
+
+{% block titulo_h1 %} Preactivar línea{% endblock %}
+{% block descripcion %} 
+En esta sección podrás ingresar un número telefónico para cambiar su estado a preactivo.
+{% endblock %}
+
+{% block info %}
+
+<form class="process-form" id="preactivarForm" method="POST" action=" {{ url_for('perform_preactivation') }} "> <!--   -->
+    <div class="form-group">
+        <label for="numero">Número Telefónico</label>
+        <input type="number" id="numero" name="numero" placeholder="Ingrese el número telefónico" required>
+    </div>
+    <button type="submit" class="submit-button">Preactivar</button>
+</form>
+
+<!-- Pantalla de carga oculta por defecto -->
+<div id="loader-overlay" style="display: none;">
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Procesando preactivación... Por favor espera.</p>
+    </div>
+</div>
+
+
+<script>
+document.getElementById('preactivarForm').addEventListener('submit', function(e) {
+    // Mostrar overlay antes de enviar el formulario
+    document.getElementById('loader-overlay').style.display = 'flex';
+
+    // Opcional: deshabilitar el botón para que no se presione varias veces
+    e.target.querySelector('button[type="submit"]').disabled = true;
+
+    // El formulario se enviará normalmente después de esto
+});
+</script>
+
+{% endblock %}

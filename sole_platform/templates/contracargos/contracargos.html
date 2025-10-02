@@ -17,17 +17,6 @@ En esta sección podrás observar la lista de contracargos con cada uno de sus d
 {% block info %}
 
 <div class="header-actions">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-
-        {% if messages %}
-            <div class="flash-messages" role="alert" aria-live="assertive">
-                {% for message in messages %}
-                    <p class="message-{{ message[0] }} ">{{ message[1] }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-    {% endwith %}
     <a href="{{ url_for("add_contracargo") }}">
         <button class="btn-add">
             <i class="fas fa-plus"></i>
