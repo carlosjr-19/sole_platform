@@ -83,14 +83,17 @@ def preactivar_linea(msisdn: str) -> dict:
 
                 if "no exitosa" in mensaje:
                     print("❌ Reactivación no exitosa:", mensaje)
+                    browser.close()
                     return {"status": "danger", "message": mensaje}
 
                 elif "se realizó con éxito" in mensaje:
+                    browser.close()
                     print("✅ Reactivación exitosa:", mensaje)
                     return {"status": "success", "message": mensaje}
 
                 else:
                     print("❓ Mensaje desconocido:", mensaje)
+                    browser.close()
                     return {"status": "danger", "message": "No se encontró mensaje de resultado"}
 
             except TimeoutError:
@@ -99,11 +102,12 @@ def preactivar_linea(msisdn: str) -> dict:
                     page.wait_for_selector("label.help-block", timeout=3000)
                     mensaje_error = page.inner_text("label.help-block strong")
                     print("❌ Error:", mensaje_error)
+                    browser.close()
                     return {"status": "not_found", "message": mensaje_error}
                 
                 except TimeoutError:
                     print("❓ No se encontró ni fecha ni mensaje de error (revisar la lógica).")
-                    
+                    browser.close()
                     return {"status": "danger", "message": "❓ No se encontró ni fecha ni mensaje de error (revisar la lógica)."}
                 
         return {"status": "unknown", "message": "Ocurrió un error desconocido. Consulte al administrador."}
