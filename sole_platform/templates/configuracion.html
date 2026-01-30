@@ -1,0 +1,138 @@
+{% extends 'layout.html' %}
+
+{% block title %} Configuración {% endblock %}
+
+{% block titulo_h1 %} Configuración {% endblock %}
+{% block descripcion %} Personaliza tu experiencia en la plataforma {% endblock %}
+
+{% block info %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h3
+        style="margin-top: 0; margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        Perfil de Usuario</h3>
+
+    <form action="{{ url_for('update_profile') }}" method="POST">
+        <div class="row">
+            <label for="email">Correo Electrónico</label>
+            <input type="text" id="email" value="{{ current_user.email }}" disabled
+                style="background-color: var(--panel); color: var(--muted);">
+            <small style="color: var(--muted); margin-top: 4px;">El correo no se puede cambiar.</small>
+        </div>
+
+        <div class="row">
+            <label for="fullname">Nombre Completo</label>
+            <input type="text" id="fullname" name="fullname" value="{{ current_user.fullname }}" required>
+        </div>
+
+        <div class="row">
+            <label for="password">Nueva Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Dejar en blanco para mantener la actual">
+        </div>
+
+        <div class="form-actions" style="justify-content: flex-end; margin-top: 20px;">
+            <button type="submit" class="primary">Guardar Cambios</button>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 20px auto 0;">
+    <h3
+        style="margin-top: 0; margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        Apariencia</h3>
+
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <strong style="display: block; font-size: 14px;">Modo Oscuro</strong>
+            <span style="font-size: 13px; color: var(--muted);">Cambia entre tema claro y oscuro.</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+</div>
+
+<style>
+    /* Toggle Switch Styles */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    input:checked+.slider {
+        background-color: var(--accent-color);
+    }
+
+    input:focus+.slider {
+        box-shadow: 0 0 1px var(--accent-color);
+    }
+
+    input:checked+.slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+    const toggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    // Check saved preference
+    if (localStorage.getItem('theme') === 'dark') {
+        toggle.checked = true;
+    }
+
+    toggle.addEventListener('change', () => {
+        if (toggle.checked) {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+</script>
+
+{% endblock %}

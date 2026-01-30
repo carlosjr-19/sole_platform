@@ -35,3 +35,22 @@ class ModelUser:
             return User.query.get(user_id)
         except Exception as e:
             raise Exception(f"Error: {str(e)}")
+
+    @staticmethod
+    def update_user(user_id, fullname=None, password=None):
+        try:
+            user = User.query.get(user_id)
+            if not user:
+                return False
+
+            if fullname:
+                user.fullname = fullname
+            
+            if password:
+                user.password = User.generate_hash(password)
+            
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            raise Exception(f"Error al actualizar usuario: {str(e)}")

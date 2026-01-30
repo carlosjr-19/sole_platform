@@ -21,6 +21,25 @@
     --text-color-navbar: #ffffff;
     --text-color: #5b5b5b;
     --font-family: 'Poppins', sans-serif;
+    --font-family: 'Poppins', sans-serif;
+}
+
+body.dark-mode {
+    --bg: #1e293b;
+    --muted: #94a3b8;
+    --panel: #334155;
+    --accent: #f8fafc;
+    /* Color de texto principal en modo oscuro */
+    --border: #475569;
+    --bg-navbar: #0f172a;
+    /* Navbar más oscura */
+    --bg-color: #0b1120;
+    /* Fondo general oscuro */
+    --primary-color: #374151;
+    --secondary-color: #1e293b;
+    --accent-color: #64748b;
+    --text-color-navbar: #ffffff;
+    --text-color: #cbd5e1;
 }
 
 /* Layout */

@@ -1,12 +1,13 @@
 from flask import render_template, redirect, request, jsonify, send_file, flash, url_for
 from flask import current_app
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
 from .services.commissions import report_act as ra
 from .services.commissions import report_rec as rr
 from .services.commissions import clean_folders as clean
 from .models.ModelsContracargos import ModelContracargo
 from .models.entities.contracargos import Contracargo
+from .models.ModelsUsers import ModelUser
 from . import db
 import polars as pl
 import pandas as pd
@@ -346,6 +347,18 @@ def init_app(app):
                 print(f"Números únicos en DataFrame 1: {len(solo_en_df1)}")
                 print(f"Números únicos en DataFrame 2: {len(solo_en_df2)}")
 
+                csv_procesado, precios_iguales = rr.procesar_comisiones(csv_limpio, comision_sales, porcentaje, fecha)
+                df_pandas = csv_procesado.to_pandas()
+
+                # Separar totales
+                df_sin_total = df_pandas[df_pandas['mvno_package_name'] != 'TOTAL'].sort_values(by='date')
+                fila_total = df_pandas[df_pandas['mvno_package_name'] == 'TOTAL']
+
+                # Concatenar ordenados
+                df_pandas = pd.concat([df_sin_total, fila_total], ignore_index=True)
+
+                nombre_archivo = rr.estilos_excel(df_pandas, marca, precios_iguales, fecha)
+
                 return jsonify(
                     csv_finanzas=csv_finanzas.filename,
                     xlsx_general=xlsx_general.filename,
@@ -359,7 +372,8 @@ def init_app(app):
                     solo_en_df1=list(solo_en_df1),
                     solo_en_df2=list(solo_en_df2),
                     msisdn_eliminados=msisdn_eliminados,
-                    csv_limpio=csv_limpio.height
+                    csv_limpio=csv_limpio.height,
+                    archivo_generado=nombre_archivo
                 )
                 
     @app.route('/descargar/<archivo>')
@@ -373,29 +387,31 @@ def init_app(app):
         print(f"[DEBUG] Intentando descargar: {ruta_archivo}")
 
         return send_file(ruta_archivo, as_attachment=True)
-    
-    @app.route('/preactivaciones')
+
+    @app.route("/configuracion")
     @login_required
-    def preactivaciones():
-        return render_template('scrapping/preactivar.html', active_page="preactivar")
-    
-    @app.route('/perform_preactivation', methods=['POST'])
+    def configuracion():
+        return render_template('configuracion.html', active_page="configuracion")
+
+    @app.route("/configuracion/update", methods=["POST"])
     @login_required
-    def perform_preactivation():
-        if request.method == 'POST':
-            msisdn = request.form.get('numero')
-            print(f"MSISDN recibido: {msisdn}")
-
-            from .services.scrapping import preactivar
-
-            resultado = preactivar.preactivar_linea(msisdn)
-
-            print(resultado)
-            print(resultado["status"])
-
-            flash(resultado["message"], "success" if resultado["status"] == "success" else "danger")
-
-            return redirect(url_for('preactivaciones', active_page="preactivar"))
+    def update_profile():
+        fullname = request.form.get("fullname")
+        password = request.form.get("password")
         
-        else:
-            return redirect(url_for('preactivaciones', active_page="preactivar"))
+        try:
+            # Si el password está vacío, enviamos None para que no se actualice
+            if not password or password.strip() == "":
+                password = None
+            
+            success = ModelUser.update_user(current_user.id, fullname, password)
+            
+            if success:
+                flash("Perfil actualizado correctamente.", "success")
+            else:
+                flash("No se pudo actualizar el perfil.", "danger")
+                
+        except Exception as e:
+            flash(f"Error al actualizar: {str(e)}", "danger")
+            
+        return redirect(url_for('configuracion'))

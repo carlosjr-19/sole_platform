@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="es"><!doctype html>
 <html lang="es">
+<!doctype html>
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,135 +15,147 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
     <script type="module" src="{{ url_for('static', filename='js/app.js') }}" defer></script>
     <!-- Feather icons CDN -->
     <script src="https://unpkg.com/feather-icons"></script>
     {% block head %} {% endblock %}
 </head>
+
+</head>
+<script>
+    // Check local storage for theme preference immediately to avoid flash
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+
 <body>
     <!-- Mensajes flash -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <div id="flash-messages">
+    <div id="flash-messages">
         {% for message in messages %}
-            <div class="flash-message {{ message[0] }}">
+        <div class="flash-message {{ message[0] }}">
             {{ message[1] }}
             <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
-            </div>
-        {% endfor %}
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
     {% endwith %}
 
     <!-- new: global top header with logo, user name and logout -->
     <header class="global-header">
         <div class="header-inner">
-        <div class="top-logo" aria-hidden="true">
-            <img src="{{ url_for('static', filename='img/saturno.png') }}" alt="Saturn logo" class="logo-img" width="28" height="28" />
-        </div>
-        <div class="header-spacer"></div>
-        <div class="header-right">
-            <span class="user-name"> {{ current_user.fullname }} </span>
-            <a class="logout-link" href="{{ url_for('auth.logout') }}">
-            <button id="topLogout" class="top-logout" aria-label="Cerrar sesión">
-            <i data-feather="log-out" color="#ffffff"></i>
-            </button>
-            </a>
-        </div>
+            <div class="top-logo" aria-hidden="true">
+                <img src="{{ url_for('static', filename='img/saturno.png') }}" alt="Saturn logo" class="logo-img"
+                    width="28" height="28" />
+            </div>
+            <div class="header-spacer"></div>
+            <div class="header-right">
+                <span class="user-name"> {{ current_user.fullname }} </span>
+                <a class="logout-link" href="{{ url_for('auth.logout') }}">
+                    <button id="topLogout" class="top-logout" aria-label="Cerrar sesión">
+                        <i data-feather="log-out" color="#ffffff"></i>
+                    </button>
+                </a>
+            </div>
         </div>
     </header>
 
     <div class="app">
         <aside class="sidebar" id="sidebar">
-        <div class="sidebar-top">
-            <div class="brand">
-            <span class="brand-name">Sole Cybernetic</span>
-            <!-- new: in-bar toggle visible when sidebar is collapsed/mini -->
-            <button id="sidebarToggleInBar" class="inbar-toggle" aria-label="Abrir menú">
-                <i data-feather="menu"></i>
-            </button>
-            </div>
+            <div class="sidebar-top">
+                <div class="brand">
+                    <span class="brand-name">Sole Cybernetic</span>
+                    <!-- new: in-bar toggle visible when sidebar is collapsed/mini -->
+                    <button id="sidebarToggleInBar" class="inbar-toggle" aria-label="Abrir menú">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
 
-            <!-- Close button visible when sidebar is opened on smaller screens or via .open -->
+                <!-- Close button visible when sidebar is opened on smaller screens or via .open -->
 
-            <nav class="menu" aria-label="Main menu">
-            <div class="menu-section">
-                <div class="section-title">Atención</div>
-                <!--<a class="menu-item" href="#" data-page="contracargos">
+                <nav class="menu" aria-label="Main menu">
+                    <div class="menu-section">
+                        <div class="section-title">Atención</div>
+                        <!--<a class="menu-item" href="#" data-page="contracargos">
                 <i data-feather="credit-card"></i><span>Contracargos</span>
                 </a>
                 <a class="menu-item" href="#" data-page="portabilidades">
                 <i data-feather="refresh-cw"></i><span>Portabilidades</span>
                 </a>-->
-                <a class="menu-item {% if active_page == 'preactivar' %}active{% endif %}" href="{{ url_for('preactivaciones') }}" data-page="preactivar">
-                <i data-feather="smartphone"></i><span>Preactivar Línea</span>
-                </a>
-            </div>
+                    </div>
 
-            <div class="menu-section">
-                <div class="section-title">Administración</div>
-                <a class="menu-item {% if active_page == 'comisiones' %}active{% endif %}" href="{{ url_for('comisiones') }}" data-page="comisiones">
-                <i data-feather="dollar-sign"></i><span>Comisiones</span>
-                </a>
-                <a class="menu-item {% if active_page == 'contracargos' %}active{% endif %}" href="{{ url_for('list_contracargos') }}" data-page="contracargos">
-                <i data-feather="credit-card"></i><span>Contracargos</span>
-                </a>
-                <!--<a class="menu-item" href="#" data-page="usuarios">
+                    <div class="menu-section">
+                        <div class="section-title">Administración</div>
+                        <a class="menu-item {% if active_page == 'comisiones' %}active{% endif %}"
+                            href="{{ url_for('comisiones') }}" data-page="comisiones">
+                            <i data-feather="dollar-sign"></i><span>Comisiones</span>
+                        </a>
+                        <a class="menu-item {% if active_page == 'contracargos' %}active{% endif %}"
+                            href="{{ url_for('list_contracargos') }}" data-page="contracargos">
+                            <i data-feather="credit-card"></i><span>Contracargos</span>
+                        </a>
+                        <!--<a class="menu-item" href="#" data-page="usuarios">
                 <i data-feather="users"></i><span>Usuarios</span>
                 </a>
                 <a class="menu-item" href="#" data-page="config-planes">
                 <i data-feather="settings"></i><span>Planes</span>
                 </a>-->
-            </div>
+                    </div>
 
-            <div class="menu-section">
-                <div class="section-title">Operaciones</div>
-                <!--<a class="menu-item" href="#" data-page="reportes">
+                    <div class="menu-section">
+                        <div class="section-title">Operaciones</div>
+                        <!--<a class="menu-item" href="#" data-page="reportes">
                 <i data-feather="bar-chart-2"></i><span>Reportes</span>
                 </a>-->
-                <a class="menu-item {% if active_page == 'pruebas' %}active{% endif %}" href="{{ url_for('pruebas') }}" data-page="tareas">
+                        <!--<a class="menu-item {% if active_page == 'pruebas' %}active{% endif %}" href="{{ url_for('pruebas') }}" data-page="tareas">
                 <i data-feather="check-circle"></i><span>Tareas</span>
-                </a>
-            </div>
+                </a>-->
+                    </div>
 
-            <div class="menu-section">
-                <div class="section-title">Personalización</div>
-                <!--<a class="menu-item" href="#" data-page="reportes">
+                    <div class="menu-section">
+                        <div class="section-title">Personalización</div>
+                        <!--<a class="menu-item" href="#" data-page="reportes">
                 <i data-feather="bar-chart-2"></i><span>Reportes</span>
                 </a>-->
-                <a class="menu-item" href="#" id="settings" data-page="configuracion">
-                <i data-feather="sliders"></i><span>Configuraciones</span>
-                </a>
+                        <a class="menu-item {% if active_page == 'configuracion' %}active{% endif %}"
+                            href="{{ url_for('configuracion') }}" id="settings" data-page="configuracion">
+                            <i data-feather="sliders"></i><span>Configuraciones</span>
+                        </a>
+                    </div>
+                </nav>
             </div>
-            </nav>
-        </div>
 
-        <div class="sidebar-footer">
-            <a class="menu-item" href="#" id="settings">
-            <i data-feather="sliders"></i><span>Configuraciones</span>
-            </a>
-            <!--<button class="logout" id="logoutBtn">
+            <div class="sidebar-footer">
+                <a class="menu-item" href="#" id="settings">
+                    <i data-feather="sliders"></i><span>Configuraciones</span>
+                </a>
+                <!--<button class="logout" id="logoutBtn">
             <i data-feather="log-out"></i><span>Cerrar sesión</span>
             </button>-->
-        </div>
+            </div>
         </aside>
 
         <div class="main">
-        <header class="topbar">
-            <button id="toggleBtn" aria-label="Toggle menu">
-            <i data-feather="menu"></i>
-            </button>
-            <h1 id="pageTitle">{% block titulo_h1 %} {% endblock %} </h1>
-            
-        </header>
-        <p>{% block descripcion %} {% endblock %}<p>
+            <header class="topbar">
+                <button id="toggleBtn" aria-label="Toggle menu">
+                    <i data-feather="menu"></i>
+                </button>
+                <h1 id="pageTitle">{% block titulo_h1 %} {% endblock %} </h1>
 
-        <main id="content" class="content">
-            <!-- initial content: a responsive form example -->
-            {% block info %} 
-            {% endblock %}
-        </main>
+            </header>
+            <p>{% block descripcion %} {% endblock %}
+            <p>
+
+            <main id="content" class="content">
+                <!-- initial content: a responsive form example -->
+                {% block info %}
+                {% endblock %}
+            </main>
         </div>
     </div>
     <footer>
