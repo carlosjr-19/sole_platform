@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Platform Sole" />
+    <meta name="author" content="CJR19" />
+    <title>Sole Cybernetic | Servicios Digitales</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/saturn.ico') }}" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <nav class="navbar container">
+        <div class="logo">
+            <i class="fa-solid fa-planet-ringed" style="color: #fd79a8;"></i>
+            Sole <span>Cybernetic</span>
+        </div>
+        <div class="nav-links">
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#contacto">Contacto</a>
+            <a href="{{ url_for('auth.login') }}" class="btn-primary">Iniciar Sesión</a>
+        </div>
+    </nav>
+
+    <header id="inicio" class="hero container">
+        <div class="glow"></div>
+        <div class="hero-content">
+            <h1>Tu presencia digital <br>con estilo y calidad</h1>
+            <p>Transformamos tus ideas en experiencias digitales impactantes. Diseño web, desarrollo a medida y
+                soluciones creativas para tu negocio.</p>
+            <a href="#contacto" class="btn-primary">Cotizar Proyecto</a>
+        </div>
+        <div class="hero-image">
+            <!-- Placeholder for a dynamic dashboard or phone mockup image -->
+            <!-- Using a font awesome icon as placeholder art if no image is available, but intended for the user's uploaded style -->
+            <div style="font-size: 15rem; color: rgba(255,255,255,0.05);">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+        </div>
+    </header>
+
+    <section id="nosotros" class="about">
+        <div class="container about-content">
+            <div class="about-text">
+                <h2 class="section-title" style="text-align: left; margin-bottom: 30px;">Sobre <span>Sole
+                        Cybernetic</span></h2>
+                <p>Somos una empresa emergente comprometida con brindar soluciones digitales de alta calidad a precios
+                    accesibles.</p>
+                <p>"Nuestro enfoque está en la creación de páginas y sistemas web personalizados, diseñados
+                    específicamente para las necesidades de cada cliente. Contamos con un equipo de profesionales
+                    apasionados por la tecnología y el diseño, listos para llevar tu proyecto al siguiente nivel."</p>
+            </div>
+            <div class="about-image">
+                <!-- Decorative element or image placeholder -->
+                <div
+                    style="background: linear-gradient(45deg, #6c5ce7, #fd79a8); height: 300px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 5rem; color: white;">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios" class="services container">
+        <h2 class="section-title">Nuestros <span>Servicios</span></h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="icon"><i class="fa-solid fa-laptop-code"></i></div>
+                <h3>Desarrollo Web</h3>
+                <p>Páginas web personalizadas, responsivas y optimizadas para todos los dispositivos. Desde landing
+                    pages hasta sistemas complejos.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon"><i class="fa-solid fa-palette"></i></div>
+                <h3>Diseño Gráfico</h3>
+                <p>Creación de identidad visual, logotipos, infografías, invitaciones digitales y material publicitario
+                    para tu marca.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                <h3>Aplicaciones Web</h3>
+                <p>Sistemas a la medida para gestionar tu negocio, automatizar procesos y mejorar la eficiencia
+                    operativa.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="contact container">
+        <div class="contact-box">
+            <h2 class="section-title" style="margin-bottom: 20px;">Contáctanos</h2>
+            <p>¿Listo para iniciar tu proyecto? Escríbenos.</p>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>55 8429 6381</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>solecybernetic@gmail.com</span>
+                </div>
+                <div class="contact-item">
+                    <a href="https://www.facebook.com/profile.php?id=100092034454952" target="_blank">
+                        <i class="fa-brands fa-facebook"></i>
+                    </a>
+                    <span>Síguenos</span>
+                </div>
+                <div class="contact-item">
+                    <a href="#" target="_blank">
+                        <i class="fa-brands fa-linkedin"></i>
+                    </a>
+                    <span>LinkedIn</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Sole Cybernetic. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

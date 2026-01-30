@@ -17,7 +17,7 @@ def init_app(app):
 
     @app.route("/")
     def home():
-        return "<h1>Welcome to Sole Platform</h1> <a href='/login'>Go to Login</a>"
+        return render_template('landing.html')
 
     @app.route("/inicio")
     @login_required
