@@ -39,7 +39,7 @@ def init_app(app):
     @login_required
     def portouts():
         mvnos = bp.lista_mvnos()
-        return render_template('portouts/portouts.html', active_page="portouts", mvnos=mvnos)
+        return render_template('portOuts/portouts.html', active_page="portouts", mvnos=mvnos)
     
     
     @app.errorhandler(404)
