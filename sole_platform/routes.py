@@ -39,6 +39,7 @@ def init_app(app):
     @login_required
     def portouts():
         mvnos = bp.lista_mvnos()
+        #acomodar nombre de carpeta
         return render_template('portOuts/portouts.html', active_page="portouts", mvnos=mvnos)
     
     
