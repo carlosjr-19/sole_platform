@@ -109,9 +109,10 @@
 
                     <div class="menu-section">
                         <div class="section-title">Operaciones</div>
-                        <!--<a class="menu-item" href="#" data-page="reportes">
-                <i data-feather="bar-chart-2"></i><span>Reportes</span>
-                </a>-->
+                        <a class="menu-item {% if active_page == 'reportes' %}active{% endif %}"
+                            href="{{ url_for('portouts') }}" data-page="reportes">
+                            <i data-feather="phone-forwarded"></i><span>Port Outs</span>
+                        </a>
                         <!--<a class="menu-item {% if active_page == 'pruebas' %}active{% endif %}" href="{{ url_for('pruebas') }}" data-page="tareas">
                 <i data-feather="check-circle"></i><span>Tareas</span>
                 </a>-->

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from .services.commissions import report_act as ra
 from .services.commissions import report_rec as rr
 from .services.commissions import clean_folders as clean
+from .services.portOuts import portouts as bp
 from .models.ModelsContracargos import ModelContracargo
 from .models.entities.contracargos import Contracargo
 from .models.ModelsUsers import ModelUser
@@ -33,6 +34,13 @@ def init_app(app):
     @login_required
     def comisiones():
         return render_template('commisions/comisiones.html', active_page="comisiones")
+
+    @app.route("/portouts/")
+    @login_required
+    def portouts():
+        mvnos = bp.lista_mvnos()
+        return render_template('portouts/portouts.html', active_page="portouts", mvnos=mvnos)
+    
     
     @app.errorhandler(404)
     def page_not_found(e):
@@ -387,6 +395,63 @@ def init_app(app):
         print(f"[DEBUG] Intentando descargar: {ruta_archivo}")
 
         return send_file(ruta_archivo, as_attachment=True)
+
+    
+    
+    @app.route('/form_portouts', methods=['POST'])
+    @login_required
+    def form_portouts():
+
+        if request.method == 'POST':
+            mvno = request.form.get('mvno')
+            fecha_desde = request.form.get('fecha_desde')
+            fecha_hasta = request.form.get('fecha_hasta')
+            
+            # Obtener lista de MVNOs para el dropdown
+            mvnos = bp.lista_mvnos()
+
+            print(f"Búsqueda: MVNO={mvno}, Desde={fecha_desde}, Hasta={fecha_hasta}")
+            
+            # Obtener resultados filtrados
+            resultados = bp.buscar_portouts(mvno, fecha_desde, fecha_hasta)
+
+            return render_template('portOuts/portouts.html', 
+                                   active_page="portouts", 
+                                   mvnos=mvnos, 
+                                   resultados=resultados,
+                                   selected_mvno=mvno,
+                                   selected_fecha_desde=fecha_desde,
+                                   selected_fecha_hasta=fecha_hasta)
+
+    @app.route('/download_portouts', methods=['POST'])
+    @login_required
+    def download_portouts():
+        mvno = request.form.get('mvno')
+        fecha_desde = request.form.get('fecha_desde')
+        fecha_hasta = request.form.get('fecha_hasta')
+
+        # 1. Limpiar carpeta de descargas
+        try:
+           clean.limpiar_downloads()
+        except Exception as e:
+           print(f"Error limpiando downloads: {e}")
+
+        # 2. Obtener datos
+        resultados = bp.buscar_portouts(mvno, fecha_desde, fecha_hasta)
+        
+        if not resultados:
+            flash("No hay datos para descargar con los filtros seleccionados.", "warning")
+            return redirect(url_for('portouts'))
+
+        # 3. Generar Excel
+        DOWNLOAD_FOLDER = current_app.config['DOWNLOAD_FOLDER']
+        filename = bp.generar_excel(resultados, DOWNLOAD_FOLDER)
+
+        if filename:
+             return redirect(url_for('descargar', archivo=filename))
+        else:
+             flash("Error al generar el archivo Excel.", "danger")
+             return redirect(url_for('portouts'))
 
     @app.route("/configuracion")
     @login_required

@@ -1,0 +1,106 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='css/portouts.css') }}" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+{% endblock %}
+
+{% block titulo_h1 %} Reporte Port Outs {% endblock %}
+
+
+{% block descripcion %}
+En esta sección podrás generar un reporte con la lista de port outs de acuerdo a la marca o por fecha.
+{% endblock %}
+
+{% block title %} Reporte Port Outs {% endblock %}
+
+{% block info %}
+<div id="loader-overlay" style="display: none;">
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Procesando reporte... Por favor espera.</p>
+    </div>
+</div>
+<form class="portouts-form" id="portoutsForm" method="POST">
+    <div class="form-group">
+        <label for="mvno">Marca MVNO</label>
+        <select id="mvno" name="mvno" required>
+            <option value="Todas" {% if selected_mvno=='Todas' %}selected{% endif %}>Todas</option>
+            {% for mvno in mvnos %}
+            <option value="{{ mvno }}" {% if selected_mvno==mvno %}selected{% endif %}>{{ mvno }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="fecha_desde">Fecha Desde</label>
+        <input type="date" id="fecha_desde" name="fecha_desde" value="{{ selected_fecha_desde }}" required>
+    </div>
+    <div class="form-group">
+        <label for="fecha_hasta">Fecha Hasta</label>
+        <input type="date" id="fecha_hasta" name="fecha_hasta" value="{{ selected_fecha_hasta }}" required>
+    </div>
+    <button type="submit" class="submit-button" value="Generar" formaction="/form_portouts">Generar Reporte</button>
+</form>
+
+<script>
+    // Mostrar loader en el formulario de búsqueda
+    document.getElementById('portoutsForm').addEventListener('submit', function () {
+        document.getElementById('loader-overlay').style.display = 'flex';
+    });
+
+    // Mostrar loader en el formulario de descarga si existe
+    // Usamos delegación de eventos o chequeo al cargar porque el form puede no existir si no hay resultados
+    document.addEventListener('DOMContentLoaded', function () {
+        const downloadForm = document.getElementById('downloadForm');
+        if (downloadForm) {
+            downloadForm.addEventListener('submit', function () {
+                document.getElementById('loader-overlay').style.display = 'flex';
+                // Ocultar loader después de unos segundos ya que la descarga no refresca la página
+                setTimeout(() => {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                }, 3000);
+            });
+        }
+    });
+</script>
+
+<div id="resultado-container" class="results-container">
+    {% if resultados %}
+    <table class="table table-striped table-bordered" style="width: 100%; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>MSISDN</th>
+                <th>FECHA</th>
+                <th>MARCA</th>
+                <th>OPERADOR</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in resultados %}
+            <tr>
+                <td>{{ row.msisdn }}</td>
+                <td>{{ row.fecha }}</td>
+                <td>{{ row.marca }}</td>
+                <td>{{ row.operador }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <form action="/download_portouts" method="POST" id="downloadForm">
+            <input type="hidden" name="mvno" value="{{ selected_mvno }}">
+            <input type="hidden" name="fecha_desde" value="{{ selected_fecha_desde }}">
+            <input type="hidden" name="fecha_hasta" value="{{ selected_fecha_hasta }}">
+            <button type="submit" class="btn-download">
+                <i class="fas fa-file-excel"></i> Descargar Excel
+            </button>
+        </form>
+    </div>
+    {% elif resultados is defined %}
+    <p style="text-align: center; margin-top: 20px;">No se encontraron resultados para la búsqueda.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

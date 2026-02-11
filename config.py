@@ -30,4 +30,9 @@ class ProductionConfig(Config):
     MYSQL_PASSWORD = os.getenv("MYSQLPASSWORD")
     MYSQL_DB = os.getenv("MYSQLDATABASE")
     MYSQL_PORT = int(os.getenv("MYSQLPORT", 3306))
+    
+    # En Railway, usar /tmp para archivos temporales si es necesario
+    if os.getenv("RAILWAY_ENVIRONMENT"):
+        DOWNLOAD_FOLDER = "/tmp"
+        UPLOAD_FOLDER = "/tmp"
 
