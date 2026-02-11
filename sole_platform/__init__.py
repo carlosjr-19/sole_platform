@@ -50,7 +50,7 @@ def create_app():
 
     app.db = db
 
-    with app.app_context():
-        db.create_all()  # 🔥 Crea las tablas si no existen
+    #with app.app_context():
+    #    db.create_all()  # 🔥 Crea las tablas si no existen
 
     return app
