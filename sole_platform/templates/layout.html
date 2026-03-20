@@ -99,6 +99,10 @@
                             href="{{ url_for('list_contracargos') }}" data-page="contracargos">
                             <i data-feather="credit-card"></i><span>Contracargos</span>
                         </a>
+                        <a class="menu-item {% if active_page == 'returns' %}active{% endif %}"
+                            href="{{ url_for('returns') }}" data-page="returns">
+                            <i class="fa-solid fa-arrow-rotate-left"></i><span>Devoluciones</span>
+                        </a>
                         <!--<a class="menu-item" href="#" data-page="usuarios">
                 <i data-feather="users"></i><span>Usuarios</span>
                 </a>
