@@ -1,14 +1,17 @@
 {% extends 'layout.html' %}
 
-{% block head %} 
+{% block head %}
 <link href="{{ url_for('static', filename='css/comisiones.css') }}" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 {% endblock %}
 
 {% block title %} Comisiones {% endblock %}
 
 {% block titulo_h1 %} Comisiones de marca {% endblock %}
-{% block descripcion %} 
-En esta sección podrás seleccionar un archivo csv de finanzas y un archivo general (Activaciones/Recargas) junto con los filtros del formulario para poder generar un reporte de finanzas en Excel
+{% block descripcion %}
+En esta sección podrás seleccionar un archivo csv de finanzas y un archivo general (Activaciones/Recargas) junto con los
+filtros del formulario para poder generar un reporte de finanzas en Excel
 {% endblock %}
 
 
@@ -62,31 +65,31 @@ En esta sección podrás seleccionar un archivo csv de finanzas y un archivo gen
 
 {% block script %}
 <script>
-    document.getElementById('comisionesForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+    document.getElementById('comisionesForm').addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    // Mostrar loader
-    document.getElementById("loader-overlay").style.display = "flex";
+        // Mostrar loader
+        document.getElementById("loader-overlay").style.display = "flex";
 
-    const form = e.target;
-    const formData = new FormData(form);
+        const form = e.target;
+        const formData = new FormData(form);
 
-    fetch('/commissions', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error en el servidor');
-        }
-        return response.json();
-    })
-    .then(data => {
-        const resultadoDiv = document.getElementById('resultado-container');
+        fetch('/commissions', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en el servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const resultadoDiv = document.getElementById('resultado-container');
 
-        if (data.proceso == 'activacion'){
+                if (data.proceso == 'activacion') {
 
-            let resultadoHTML = `
+                    let resultadoHTML = `
             <h2>📊 Resultado del proceso</h2>
             <div class="table-wrapper">
             <table class="tabla-resumen">
@@ -108,26 +111,26 @@ En esta sección podrás seleccionar un archivo csv de finanzas y un archivo gen
             <div id="resultado-descarga"></div>
             `;
 
-            // Si existe archivo generado, agregar botón de descarga
-            if (data.archivo_generado) {
-                resultadoHTML += `
+                    // Si existe archivo generado, agregar botón de descarga
+                    if (data.archivo_generado) {
+                        resultadoHTML += `
                 <br>
                 <!--<a href="/descargar/${data.archivo_generado}" id="dwl_button" class="boton" download>📥 Descargar Excel</a>-->
                 <br>
                 <a href="/descargar/Comisiones_act_${data.marca}_${data.fecha}.xlsx" id="dwl_button" class="boton-descarga" download>📥 Descargar Excel</a>
                 `;
-            }
+                    }
 
-            // META PIXEL CODE
-            if (data.marca == 'Evolink') {
-                // Enviar evento de compra a Meta Pixel
-                fbq('track', 'Purchase', {value: 380.00, currency: 'MXN'});
-            }
+                    // META PIXEL CODE
+                    if (data.marca == 'Evolink') {
+                        // Enviar evento de compra a Meta Pixel
+                        fbq('track', 'Purchase', { value: 380.00, currency: 'MXN' });
+                    }
 
-            resultadoDiv.innerHTML = resultadoHTML;
-        
-        } else if (data.proceso == 'recarga') {
-            let resultadoHTML = `
+                    resultadoDiv.innerHTML = resultadoHTML;
+
+                } else if (data.proceso == 'recarga') {
+                    let resultadoHTML = `
             <h2>📊 Resultado del proceso</h2>
             <div class="table-wrapper">
             <table class="tabla-resumen">
@@ -148,36 +151,36 @@ En esta sección podrás seleccionar un archivo csv de finanzas y un archivo gen
             <div id="resultado-descarga"></div>
             `;
 
-            // Si existe archivo generado, agregar botón de descarga
-            if (data.archivo_generado) {
-                resultadoHTML += `
+                    // Si existe archivo generado, agregar botón de descarga
+                    if (data.archivo_generado) {
+                        resultadoHTML += `
                 <br>
                 <!--<a href="/descargar/${data.archivo_generado}" id="dwl_button" class="boton" download>📥 Descargar Excel</a>-->
                 <br>
                 <a href="/descargar/Comisiones_rec_${data.marca}_${data.fecha}.xlsx" id="dwl_button" class="boton-descarga" download>📥 Descargar Excel</a>
                 `;
-            }
+                    }
 
-            // META PIXEL CODE
-            if (data.marca == 'Evolink') {
-                // Enviar evento de compra a Meta Pixel
-                fbq('track', 'Purchase', {value: 380.00, currency: 'MXN'});
-            }
+                    // META PIXEL CODE
+                    if (data.marca == 'Evolink') {
+                        // Enviar evento de compra a Meta Pixel
+                        fbq('track', 'Purchase', { value: 380.00, currency: 'MXN' });
+                    }
 
-            resultadoDiv.innerHTML = resultadoHTML;
-        }
-    })
-    .catch(error => {
-        document.getElementById('resultado-container').innerHTML = `
+                    resultadoDiv.innerHTML = resultadoHTML;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultado-container').innerHTML = `
         <p style="color:red;">❌ Error: ${error.message}</p>
         `;
-    }).finally(() => {
-        // Ocultar loader
-        document.getElementById("loader-overlay").style.display = "none";
-        
+            }).finally(() => {
+                // Ocultar loader
+                document.getElementById("loader-overlay").style.display = "none";
+
+            });
     });
-});
-    </script>
+</script>
 {% endblock %}
 
 {% endblock %}

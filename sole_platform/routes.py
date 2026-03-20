@@ -6,8 +6,11 @@ from .services.commissions import report_act as ra
 from .services.commissions import report_rec as rr
 from .services.commissions import clean_folders as clean
 from .services.portOuts import portouts as bp
+from .services.returns import process_returns as pr
 from .models.ModelsContracargos import ModelContracargo
+from .models.modelsDevoluciones import ModelDevolucion
 from .models.entities.contracargos import Contracargo
+from .models.entities.devoluciones import Devolucion
 from .models.ModelsUsers import ModelUser
 from . import db
 import polars as pl
@@ -39,8 +42,40 @@ def init_app(app):
     @login_required
     def portouts():
         mvnos = bp.lista_mvnos()
-        #acomodar nombre de carpeta
         return render_template('portOuts/portouts.html', active_page="portouts", mvnos=mvnos)
+
+    @app.route("/returns/")
+    @login_required
+    def returns():
+        page = request.args.get("page", 1, type=int)
+        search = request.args.get("search", "")
+        fecha_desde = request.args.get("fecha_desde")
+        fecha_hasta = request.args.get("fecha_hasta")
+        
+        per_page = 5
+
+        # Convertir fechas si existen
+        fecha_desde_dt = datetime.strptime(fecha_desde, "%Y-%m-%d") if fecha_desde else None
+        fecha_hasta_dt = datetime.strptime(fecha_hasta, "%Y-%m-%d") if fecha_hasta else None
+
+        try:
+            pagination = ModelDevolucion.search_devoluciones(search, fecha_desde_dt, fecha_hasta_dt, page, per_page)
+            devoluciones = pagination.items
+            total_pages = pagination.pages
+
+            return render_template(
+                'returns/devoluciones.html', 
+                active_page="returns",
+                devoluciones=devoluciones,
+                page=page,
+                total_pages=total_pages,
+                search=search,
+                selected_fecha_desde=fecha_desde,
+                selected_fecha_hasta=fecha_hasta
+            )
+        except Exception as e:
+            flash(f"Error al cargar devoluciones: {str(e)}", "danger")
+            return render_template('returns/devoluciones.html', active_page="returns", devoluciones=[], page=1, total_pages=1)
     
     
     @app.errorhandler(404)
@@ -188,6 +223,18 @@ def init_app(app):
             flash("Clave incorrecta. No se pudo eliminar el registro.", "danger")
 
         return redirect(url_for('list_contracargos'))
+
+    @app.route('/delete_devolucion/<int:devolucion_id>', methods = ['GET', 'POST'])
+    def delete_devolucion(devolucion_id):
+        entered_password = request.form.get('password')
+
+        if entered_password == os.getenv("SECRET_DELETE_KEY"):
+            ModelDevolucion.delete_devolucion(devolucion_id)
+            flash("El registro se eliminó correctamente.", "success")
+        else:
+            flash("Clave incorrecta. No se pudo eliminar el registro.", "danger")
+
+        return redirect(url_for('returns'))
     
     @app.route('/search', methods=["GET", "POST"])
     @login_required
@@ -276,6 +323,8 @@ def init_app(app):
                     marca = "Gou! MÃ³vil"
                 elif marca == "Hey Móvil":
                     marca = "Hey MÃ³vil"
+                elif marca == "Living Móvil":
+                    marca = "Living MÃ³vil"
                 
 
                 # Procesar los archivos
@@ -334,6 +383,8 @@ def init_app(app):
                     marca = "Gou! MÃ³vil"
                 elif marca == "Hey Móvil":
                     marca = "Hey MÃ³vil"
+                elif marca == "Living Móvil":
+                    marca = "Living MÃ³vil"
 
                 # Mostrar recargas de la marca elegida
                 rec_general = (
@@ -449,10 +500,60 @@ def init_app(app):
         filename = bp.generar_excel(resultados, DOWNLOAD_FOLDER)
 
         if filename:
-             return redirect(url_for('descargar', archivo=filename))
+            return redirect(url_for('descargar', archivo=filename))
         else:
              flash("Error al generar el archivo Excel.", "danger")
              return redirect(url_for('portouts'))
+
+    @app.route('/upload_returns', methods=['POST'])
+    @login_required
+    def upload_returns():
+        if 'file_csv' not in request.files:
+            flash("No se seleccionó ningún archivo", "warning")
+            return redirect(url_for('returns'))
+        
+        file = request.files['file_csv']
+        if file.filename == '':
+            flash("No se seleccionó ningún archivo", "warning")
+            return redirect(url_for('returns'))
+        
+        if file and file.filename.endswith('.csv'):
+            try:
+                upload_folder = current_app.config['UPLOAD_FOLDER']
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                
+                file_path = os.path.join(upload_folder, file.filename)
+                file.save(file_path)
+                
+                try:
+                    # Procesar CSV
+                    processed_data = pr.process_returns_csv(file_path)
+                    
+                    if not processed_data:
+                        flash("No se encontraron registros de tipo 'devolucion' en el archivo.", "info")
+                    else:
+                        # Insertar en base de datos
+                        agregados, duplicados, errores = ModelDevolucion.add_devoluciones_batch(processed_data)
+                        
+                        message = f"Proceso finalizado: {agregados} agregados"
+                        if duplicados > 0:
+                            message += f", {duplicados} duplicados omitidos"
+                        if errores > 0:
+                            message += f", {errores} errores"
+                        
+                        flash(message, "success" if errores == 0 else "warning")
+                finally:
+                    # Eliminar archivo después de procesar para no ocupar espacio
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        
+            except Exception as e:
+                flash(f"Error al procesar el archivo: {str(e)}", "danger")
+        else:
+            flash("El archivo debe ser un CSV", "danger")
+            
+        return redirect(url_for('returns'))
 
     @app.route("/configuracion")
     @login_required
