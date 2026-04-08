@@ -9,7 +9,7 @@ class Contracargo(db.Model):
     ord_pay = db.Column(db.String(100))
     email = db.Column(db.String(120), nullable=False)
     monto = db.Column(db.Float, nullable=False)
-    marca = db.Column(db.String(50), nullable=False)
+    marca = db.Column(db.String(50), nullable=True)
     paid = db.Column(db.Boolean, default=False)
     descripcion = db.Column(db.Text)
     date_inserted = db.Column(db.DateTime, server_default=db.func.now())

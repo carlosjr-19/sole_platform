@@ -1,13 +1,13 @@
 {% extends 'layout.html' %}
 
-{% block head %} 
-    <link href="{{ url_for('static', filename='css/add_contracargo.css') }}" rel="stylesheet"/>
+{% block head %}
+<link href="{{ url_for('static', filename='css/add_contracargo.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block title %}Editar Contracargo{% endblock %}
 
 {% block titulo_h1 %} Editar Contracargo {% endblock %}
-{% block descripcion %} En esta sección podrás editar los detalles del contracargo seleccionado. 
+{% block descripcion %} En esta sección podrás editar los detalles del contracargo seleccionado.
 {% endblock %}
 
 {% block info %}
@@ -30,7 +30,7 @@
 
         <div class="form-group">
             <label for="ordPay">Marca</label>
-            <input type="text" id="marca" name="marca" value="{{ contracargo.marca }}" disabled>
+            <input type="text" id="marca" name="marca" value="{{ contracargo.marca }}">
         </div>
 
         <div class="form-group">
@@ -54,7 +54,8 @@
 
         <div class="form-group">
             <label for="comments">Comentarios</label>
-            <textarea id="comments" name="comentario" placeholder="Ingrese sus comentarios aquí...">{{ contracargo.descripcion }}</textarea>
+            <textarea id="comments" name="comentario"
+                placeholder="Ingrese sus comentarios aquí...">{{ contracargo.descripcion }}</textarea>
         </div>
 
         <button class="button-add" type="submit" value="Enviar">Actualizar</button>
