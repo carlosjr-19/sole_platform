@@ -16,14 +16,42 @@ En esta sección podrás observar la lista de contracargos con cada uno de sus d
 
 {% block info %}
 
-<div class="header-actions">
-    <a href="{{ url_for("add_contracargo") }}">
+<div class="header-actions" style="display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+    <a href="{{ url_for('add_contracargo') }}">
         <button class="btn-add">
             <i class="fas fa-plus"></i>
             Añadir contracargo
         </button>
     </a>
+
+    <!-- Formulario para subir múltiples contracargos por CSV -->
+    <form action="{{ url_for('upload_contracargos') }}" method="POST" enctype="multipart/form-data" class="upload-form" style="display: flex; align-items: center;">
+        <div class="upload-container" style="display: flex; align-items: center; gap: 15px; flex-direction: column;">
+            <div class="upload-actions" style="display: flex; gap: 10px;">
+                <div class="file-input-wrapper" style="position: relative; overflow: hidden; display: inline-block;">
+                    <div class="btn-file-custom" style="padding: 10px 15px; border: 2px dashed #007bff; border-radius: 5px; color: #007bff; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                        <i class="fas fa-file-csv"></i>
+                        <span>Seleccionar archivo CSV</span>
+                    </div>
+                    <input type="file" id="finddoc" name="file_csv" accept=".csv" required
+                        onchange="updateFileName(this)" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                </div>
+                <button type="submit" class="btn-add" style="padding: 10px 15px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold;">
+                    <i class="fas fa-upload"></i>
+                    Subir archivo
+                </button>
+            </div>
+            <div id="file-name" class="filename-display" style="font-size: 0.85em; color: #666; font-style: italic;">No se ha seleccionado ningún archivo</div>
+        </div>
+    </form>
 </div>
+
+<script>
+    function updateFileName(input) {
+        const fileName = input.files.length > 0 ? input.files[0].name : "No se ha seleccionado ningún archivo";
+        document.getElementById('file-name').textContent = fileName;
+    }
+</script>
 
 
 <div class="search-container">

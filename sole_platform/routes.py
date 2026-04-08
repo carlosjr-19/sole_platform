@@ -7,6 +7,7 @@ from .services.commissions import report_rec as rr
 from .services.commissions import clean_folders as clean
 from .services.portOuts import portouts as bp
 from .services.returns import process_returns as pr
+from .services.contracargos import process_contracargos as pc
 from .models.ModelsContracargos import ModelContracargo
 from .models.modelsDevoluciones import ModelDevolucion
 from .models.entities.contracargos import Contracargo
@@ -560,6 +561,56 @@ def init_app(app):
             flash("El archivo debe ser un CSV", "danger")
             
         return redirect(url_for('returns'))
+
+    @app.route('/upload_contracargos', methods=['POST'])
+    @login_required
+    def upload_contracargos():
+        if 'file_csv' not in request.files:
+            flash("No se seleccionó ningún archivo", "warning")
+            return redirect(url_for('list_contracargos'))
+        
+        file = request.files['file_csv']
+        if file.filename == '':
+            flash("No se seleccionó ningún archivo", "warning")
+            return redirect(url_for('list_contracargos'))
+        
+        if file and file.filename.endswith('.csv'):
+            try:
+                upload_folder = current_app.config['UPLOAD_FOLDER']
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                
+                file_path = os.path.join(upload_folder, file.filename)
+                file.save(file_path)
+                
+                try:
+                    # Procesar CSV
+                    processed_data = pc.process_contracargos_csv(file_path)
+                    
+                    if not processed_data:
+                        flash("No se encontraron registros de tipo 'contracargo' en el archivo.", "info")
+                    else:
+                        # Insertar en base de datos
+                        agregados, duplicados, errores = ModelContracargo.add_contracargos_batch(processed_data)
+                        
+                        message = f"Proceso finalizado: {agregados} agregados"
+                        if duplicados > 0:
+                            message += f", {duplicados} duplicados omitidos"
+                        if errores > 0:
+                            message += f", {errores} errores"
+                        
+                        flash(message, "success" if errores == 0 else "warning")
+                finally:
+                    # Eliminar archivo después de procesar para no ocupar espacio
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        
+            except Exception as e:
+                flash(f"Error al procesar el archivo: {str(e)}", "danger")
+        else:
+            flash("El archivo debe ser un CSV", "danger")
+            
+        return redirect(url_for('list_contracargos'))
 
     @app.route("/configuracion")
     @login_required

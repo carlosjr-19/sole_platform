@@ -6,7 +6,7 @@ class ModelContracargo:
     @staticmethod
     def get_all_contracargos(page, per_page=5):
         try:
-            return Contracargo.query.order_by(Contracargo.date_inserted).paginate(page=page, per_page=per_page)
+            return Contracargo.query.order_by(Contracargo.date_inserted.desc()).paginate(page=page, per_page=per_page)
         except Exception as e:
             raise Exception(f"Error al obtener contracargos: {str(e)}")
     
@@ -99,4 +99,52 @@ class ModelContracargo:
         except Exception as e:
             db.session.rollback()
             raise Exception(f"Error al editar contracargo: {str(e)}")
+
+    @staticmethod
+    def add_contracargos_batch(contracargos_data):
+        """
+        Agrega múltiples contracargos a la base de datos, evitando duplicados por ord_pay.
+        Retorna (agregados, duplicados, errores)
+        """
+        agregados = 0
+        duplicados = 0
+        errores = 0
+        
+        try:
+            # Obtener todos los ord_pay existentes para verificación rápida
+            existing_ord_pays = {d.ord_pay for d in Contracargo.query.all() if d.ord_pay}
+            
+            for item in contracargos_data:
+                ord_pay = item.get("ord_pay")
+                
+                if ord_pay in existing_ord_pays:
+                    duplicados += 1
+                    continue
+                
+                try:
+                    nueva = Contracargo(
+                        name=item["name"],
+                        msisdn=item.get("msisdn", "S/N"),
+                        email=item["email"],
+                        monto=item["monto"],
+                        descripcion=item.get("descripcion", ""),
+                        marca=item.get("marca"),
+                        paid=False,
+                        ord_pay=item["ord_pay"],
+                        date_inserted=item["date_inserted"]
+                    )
+                    db.session.add(nueva)
+                    agregados += 1
+                    # Añadir al set de existentes para evitar duplicados dentro del mismo batch
+                    existing_ord_pays.add(ord_pay)
+                except Exception as ex:
+                    print(f"Error al procesar fila {item}: {ex}")
+                    errores += 1
+            
+            db.session.commit()
+            return agregados, duplicados, errores
+            
+        except Exception as e:
+            db.session.rollback()
+            raise Exception(f"Error en inserción masiva: {str(e)}")
         

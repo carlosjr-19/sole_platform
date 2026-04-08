@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
-{% block head %} 
-    <link href="{{ url_for('static', filename='css/add_contracargo.css') }}" rel="stylesheet"/>
+{% block head %}
+<link href="{{ url_for('static', filename='css/add_contracargo.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block title %} Añadir Contracargo {% endblock %}
@@ -13,81 +13,46 @@
 <div class="contenedor">
     <form id="chargebackForm" method='POST'>
         <div class="form-group">
-    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
 
             {% if messages %}
-                <div class="flash-messages" role="alert" aria-live="assertive">
-                    {% for message in messages %}
-                        <p class="message-{{ message[0] }} ">{{ message[1] }}</p>
-                    {% endfor %}
-                </div>
+            <div class="flash-messages" role="alert" aria-live="assertive">
+                {% for message in messages %}
+                <p class="message-{{ message[0] }} ">{{ message[1] }}</p>
+                {% endfor %}
+            </div>
             {% endif %}
 
-    {% endwith %}
+            {% endwith %}
 
 
             <label for="clientName">Nombre del Cliente</label>
-            <input 
-                type="text" 
-                id="clientName" 
-                name="name" 
-                required
-                placeholder="Ingrese el nombre completo"
-            >
+            <input type="text" id="clientName" name="name" required placeholder="Ingrese el nombre completo">
         </div>
 
         <div class="form-group">
             <label for="clientEmail">Correo del Cliente</label>
-            <input 
-            type="email" 
-            id="clientEmail" 
-            name="email" 
-            required
-            placeholder="ejemplo@correo.com"
-            >
+            <input type="email" id="clientEmail" name="email" required placeholder="ejemplo@correo.com">
         </div>
 
         <div class="form-group">
             <label for="clientMsisdn">MSISDN</label>
-            <input 
-            type="text" 
-            id="clientMsisdn" 
-            name="msisdn" 
-            required
-            placeholder="5511223344"
-            >
+            <input type="text" id="clientMsisdn" name="msisdn" required placeholder="5511223344">
         </div>
 
         <div class="form-group">
             <label for="clientMonto">Monto</label>
-            <input 
-            type="number" 
-            id="clientMonto" 
-            name="monto" 
-            required
-            placeholder="100"
-            >
+            <input type="number" id="clientMonto" name="monto" required placeholder="100">
         </div>
 
         <div class="form-group">
             <label for="clientMarca">Marca</label>
-            <input 
-            type="text" 
-            id="marca" 
-            name="marca" 
-            required
-            placeholder="ABC"
-            >
+            <input type="text" id="marca" name="marca" placeholder="ABC">
         </div>
 
         <div class="form-group">
             <label for="ordPay">Orden de Pago</label>
-            <input 
-            type="text" 
-            id="ordPay" 
-            name="ord_pay" 
-            placeholder="Ingrese el número de orden"
-            >
+            <input type="text" id="ordPay" name="ord_pay" placeholder="Ingrese el número de orden">
         </div>
 
         <div class="form-group">
@@ -98,17 +63,14 @@
             </select>
         </div>
 
-        
+
 
         <div class="form-group">
             <label for="comments">Comentarios</label>
-            <textarea 
-            id="comments" 
-            name="comentario" 
-            placeholder="Ingrese sus comentarios aquí"
-            ></textarea>
+            <textarea id="comments" name="comentario" placeholder="Ingrese sus comentarios aquí"></textarea>
         </div>
-        <button class="button-add" type="submit" value="Enviar" formaction="{{url_for("add_contracargo")}}">Guardar Contracargo</button>
+        <button class="button-add" type="submit" value="Enviar" formaction="{{url_for('add_contracargo')}}">Guardar
+            Contracargo</button>
     </form>
 </div>
 {% endblock %}
