@@ -301,7 +301,13 @@ def init_app(app):
 
             
             # Leer archivos con polars
-            csv = pl.read_csv(path_1)
+            try:
+                csv = pl.read_csv(path_1)
+            except Exception:
+                try:
+                    csv = pl.read_csv(path_1, encoding='iso-8859-1')
+                except Exception:
+                    csv = pl.read_csv(path_1, encoding='utf8-lossy')
             xlsx = pl.read_excel(path_2)
 
             # verificar la marca del archivo de finanzas
