@@ -148,7 +148,9 @@ body {
     justify-content: space-between;
     padding: 18px 0px;
     transition: transform .22s ease, width .22s ease;
+    position: sticky;
     top: 56px;
+    height: calc(100vh - 56px);
 }
 
 .brand {

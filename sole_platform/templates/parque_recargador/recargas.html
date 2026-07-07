@@ -1,0 +1,320 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='css/returns.css') }}" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<style>
+    /* Estilos específicos para las tarjetas y tablas de resultados */
+    .kpi-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .kpi-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        flex: 1;
+        min-width: 200px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-left: 5px solid #2196F3;
+        transition: transform 0.2s;
+    }
+    .kpi-card:hover {
+        transform: translateY(-5px);
+    }
+    .kpi-card.green { border-left-color: #4CAF50; }
+    .kpi-card.purple { border-left-color: #9c27b0; }
+    .kpi-card.orange { border-left-color: #ff9800; }
+    .kpi-card.red { border-left-color: #f44336; }
+    
+    .kpi-title {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .kpi-value {
+        font-size: 1.8rem;
+        color: #333;
+        font-weight: bold;
+    }
+    
+    .tables-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    @media (max-width: 900px) {
+        .tables-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .table-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .table-section h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+        font-size: 1.1rem;
+    }
+    .table-section h3 i {
+        color: #2196F3;
+        margin-right: 5px;
+    }
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .custom-table th, .custom-table td {
+        padding: 10px 5px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+        font-size: 0.95rem;
+    }
+    .custom-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #555;
+    }
+    .custom-table tr:hover {
+        background-color: #f5f5f5;
+    }
+    
+    /* Loader Styles */
+    #loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loader-container {
+        text-align: center;
+    }
+
+    .spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid var(--accent-color, #2196F3);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block titulo_h1 %} Parque recargador {% endblock %}
+
+{% block descripcion %}
+En esta sección podrás generar un reporte con la información sobre el parque recargador de las marcas, así como tambien los ingresos por marca y métricas financieras clave.
+{% endblock %}
+
+{% block title %} Parque recargador {% endblock %}
+
+{% block info %}
+<!-- Loader Overlay -->
+<div id="loader-overlay" style="display: none;">
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Procesando reporte... Por favor espera.</p>
+    </div>
+</div>
+
+<div class="header-actions">
+    <form action="{{ url_for('upload_parque_recargador') }}" method="POST" enctype="multipart/form-data" class="upload-form" id="recargasForm">
+        <div class="upload-container">
+            <div class="upload-actions">
+                <div class="file-input-wrapper">
+                    <div class="btn-file-custom">
+                        <i class="fas fa-file-csv"></i>
+                        <span>Seleccionar archivo CSV</span>
+                    </div>
+                    <input type="file" id="finddoc" name="file_csv" accept=".csv" required onchange="updateFileName(this)">
+                </div>
+                <button type="submit" class="btn-add">
+                    <i class="fas fa-upload"></i>
+                    Subir archivo
+                </button>
+            </div>
+            <div id="file-name" class="filename-display">No se ha seleccionado ningún archivo</div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateFileName(input) {
+        const fileName = input.files.length > 0 ? input.files[0].name : "No se ha seleccionado ningún archivo";
+        document.getElementById('file-name').textContent = fileName;
+    }
+
+    // Mostrar loader al enviar el formulario
+    document.getElementById('recargasForm').addEventListener('submit', function () {
+        document.getElementById('loader-overlay').style.display = 'flex';
+    });
+</script>
+
+{% if resultados %}
+<div style="margin-top: 30px; margin-bottom: 10px; font-weight: bold; color: #333; font-size: 1.2rem; border-bottom: 2px solid #ddd; padding-bottom: 5px;">
+    Resultados del Análisis
+</div>
+
+<div class="kpi-container">
+    <div class="kpi-card blue">
+        <div class="kpi-title">Ingreso (Precio Ref ALTAN)</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.precio_r) }} MXN</div>
+    </div>
+    <div class="kpi-card green">
+        <div class="kpi-title">Ingreso (Precio MVNO)</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.precio_m) }} MXN</div>
+    </div>
+    <div class="kpi-card purple">
+        <div class="kpi-title">Total a Pagar a ALTAN</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.total_pagar_altan) }} MXN</div>
+    </div>
+    <div class="kpi-card orange">
+        <div class="kpi-title">Ganancias del Mes</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.ganancia_mes) }} MXN</div>
+    </div>
+</div>
+
+<div class="kpi-container" style="margin-top: 0;">
+    <div class="kpi-card">
+        <div class="kpi-title">Total Recargas Realizadas</div>
+        <div class="kpi-value">{{ "{:,}".format(resultados.total_recargas) }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-title">Parque Recargador (Líneas)</div>
+        <div class="kpi-value">{{ "{:,}".format(resultados.parque_r) }}</div>
+    </div>
+    <div class="kpi-card red">
+        <div class="kpi-title">Pago ALTAN por Ref (65%)</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.total_altan) }}</div>
+    </div>
+    <div class="kpi-card red">
+        <div class="kpi-title">Pago ALTAN por Parque</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.total_parque) }}</div>
+    </div>
+</div>
+
+<div class="tables-grid">
+    <div class="table-section">
+        <h3><i class="fas fa-users"></i> Parque Recargador por Marca</h3>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th style="text-align: right;">Total Líneas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in resultados.parque_por_marca %}
+                <tr>
+                    <td>{{ row['Marca'] }}</td>
+                    <td style="text-align: right;">{{ "{:,}".format(row['Parque Recargador']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-section">
+        <h3><i class="fas fa-sync-alt"></i> Recargas Totales por Marca</h3>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th style="text-align: right;">Total Recargas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in resultados.recargas_por_marca %}
+                <tr>
+                    <td>{{ row['Marca'] }}</td>
+                    <td style="text-align: right;">{{ "{:,}".format(row['Total Recargas']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-section">
+        <h3><i class="fas fa-dollar-sign"></i> Ingreso por Marca (MVNO)</h3>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th style="text-align: right;">Ingreso (MXN)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in resultados.precios_por_nombre %}
+                <tr>
+                    <td>{{ row['Marca'] }}</td>
+                    <td style="text-align: right;">${{ "{:,.2f}".format(row['Ingreso']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-section">
+        <h3><i class="fas fa-box"></i> Paquetes Más Recargados</h3>
+        <p style="color: #666; font-size: 0.9rem; margin-top: -10px; margin-bottom: 10px;">Total recargados: <strong>{{ "{:,}".format(resultados.total_paquetes) }}</strong></p>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Paquete</th>
+                    <th style="text-align: right;">Total Recargas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in resultados.paquetes_populares %}
+                <tr>
+                    <td>{{ row['Paquete'] }}</td>
+                    <td style="text-align: right;">{{ "{:,}".format(row['Total Recargas']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if resultados.archivo_generado %}
+<div style="text-align: center; margin-top: 30px; margin-bottom: 40px;">
+    <a href="{{ url_for('descargar', archivo=resultados.archivo_generado) }}" style="text-decoration: none;">
+        <button type="button" class="btn-add" style="background-color: #2196F3; font-size: 1.1rem; padding: 12px 24px; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fas fa-file-excel"></i>
+            Descargar Reporte Excel
+        </button>
+    </a>
+</div>
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

@@ -8,6 +8,7 @@ from .services.commissions import clean_folders as clean
 from .services.portOuts import portouts as bp
 from .services.returns import process_returns as pr
 from .services.contracargos import process_contracargos as pc
+from .services.parque_recargador import parque_recargador as spr
 from .models.ModelsContracargos import ModelContracargo
 from .models.modelsDevoluciones import ModelDevolucion
 from .models.entities.contracargos import Contracargo
@@ -44,6 +45,59 @@ def init_app(app):
     def portouts():
         mvnos = bp.lista_mvnos()
         return render_template('portOuts/portouts.html', active_page="portouts", mvnos=mvnos)
+
+    @app.route("/parque_recargador/")
+    @login_required
+    def parque_recargador():
+        return render_template('parque_recargador/recargas.html', active_page="parque_recargador")
+
+    @app.route('/upload_parque_recargador', methods=['POST'])
+    @login_required
+    def upload_parque_recargador():
+        if 'file_csv' not in request.files:
+            flash("No se seleccionó ningún archivo", "warning")
+            return redirect(url_for('parque_recargador'))
+        
+        file = request.files['file_csv']
+        if file.filename == '':
+            flash("No se seleccionó ningún archivo", "warning")
+            return redirect(url_for('parque_recargador'))
+        
+        if file and file.filename.endswith('.csv'):
+            try:
+                upload_folder = current_app.config['UPLOAD_FOLDER']
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                
+                file_path = os.path.join(upload_folder, file.filename)
+                file.save(file_path)
+                
+                try:
+                    # Procesar CSV
+                    resultados = spr.process_parque_recargador_csv(file_path)
+                    
+                    if "error" in resultados:
+                        flash(resultados["error"], "danger")
+                        return redirect(url_for('parque_recargador'))
+                        
+                    # Generar el Excel
+                    download_folder = current_app.config.get('DOWNLOAD_FOLDER', os.path.join('static', 'downloads'))
+                    archivo_excel = spr.generar_excel_parque(resultados, download_folder)
+                    resultados['archivo_generado'] = archivo_excel
+                    
+                    flash("Archivo procesado correctamente", "success")
+                    return render_template('parque_recargador/recargas.html', active_page="parque_recargador", resultados=resultados)
+                finally:
+                    # Eliminar archivo después de procesar para no ocupar espacio
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        
+            except Exception as e:
+                flash(f"Error al procesar el archivo: {str(e)}", "danger")
+                return redirect(url_for('parque_recargador'))
+        else:
+            flash("El archivo debe ser un CSV", "danger")
+            return redirect(url_for('parque_recargador'))
 
     @app.route("/returns/")
     @login_required
