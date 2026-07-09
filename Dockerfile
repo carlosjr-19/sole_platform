@@ -55,4 +55,4 @@ ENV PORT=5000
 EXPOSE $PORT
 
 # Comando para ejecutar migraciones y levantar la app
-CMD ["sh", "-c", "flask db upgrade && gunicorn --bind 0.0.0.0:$PORT 'sole_platform:create_app()'"]
+CMD ["sh", "-c", "flask db upgrade && gunicorn --timeout 120 --bind 0.0.0.0:$PORT 'sole_platform:create_app()'"]

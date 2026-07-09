@@ -225,31 +225,26 @@ def estilos_excel(df, marca, precios_iguales, fecha):
         for c_idx, value in enumerate(row, start=2):
             cell = ws.cell(row=r_idx, column=c_idx, value=value)
 
-            if precios_iguales == True:
-                # Convertir a negativo si es una de las columnas que deben ser negativas
-                # Las columnas U y V son las 21 y 22 en Excel (ya que empiezas en columna 2)
-                if c_idx in [21, 22] and r_idx > 7:  # r_idx > 7 para no afectar los encabezados
-                    try:
-                        if value is not None and str(value).strip() != '':  # Solo si hay un valor
-                            value = -abs(float(value))
-                    except (ValueError, TypeError):
-                        pass  # Si no se puede convertir a número, dejamos el valor original
-            else:
-                # Convertir a negativo si es una de las columnas que deben ser negativas
-                # Las columnas U y V son las 21 y 22 en Excel (ya que empiezas en columna 2)
-                if c_idx in [21, 22] and r_idx > 7:  # r_idx > 7 para no afectar los encabezados
-                    try:
-                        if value is not None and str(value).strip() != '':  # Solo si hay un valor
-                            value = -abs(float(value))
-                    except (ValueError, TypeError):
-                        pass  # Si no se puede convertir a número, dejamos el valor original
+            # Convertir a negativo si es una de las columnas que deben ser negativas
+            # Las columnas U y V son las 21 y 22 en Excel (ya que empiezas en columna 2)
+            if c_idx in [21, 22] and r_idx > 7:  # r_idx > 7 para no afectar los encabezados
+                try:
+                    if value is not None and str(value).strip() != '':  # Solo si hay un valor
+                        value = -abs(float(value))
+                except (ValueError, TypeError):
+                    pass  # Si no se puede convertir a número, dejamos el valor original
             
             cell = ws.cell(row=r_idx, column=c_idx, value=value)
 
             # Formato de encabezados (fila 7)
             if r_idx == 7:
                 cell.font = Font(bold=True, color="000000")
-                cell.fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
+                if c_idx in [21, 22]:
+                    cell.fill = PatternFill(start_color="f9e79f", end_color="f9e79f", fill_type="solid")
+                elif c_idx in [18, 19, 20]:
+                    cell.fill = PatternFill(start_color="aed6f1", end_color="aed6f1", fill_type="solid")
+                else:
+                    cell.fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
                 cell.alignment = Alignment(horizontal='center', vertical='center')
 
                 # Borde negro
@@ -261,28 +256,22 @@ def estilos_excel(df, marca, precios_iguales, fecha):
                 thin = Side(border_style="thin", color="000000")
                 cell.border = Border(top=thin, left=thin, right=thin, bottom=thin)
 
-                # Centrar valores de columna N# (columna 2 en Excel)
-                if c_idx == 2:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                # Aplicar formatos de moneda
+                if c_idx in [15, 16, 18, 19, 20, 21, 22, 23]:
+                    cell.number_format = numbers.FORMAT_CURRENCY_USD_SIMPLE
 
-                # Centrar valores de columna N# (columna 2 en Excel)
-                if c_idx == 14:
+                # Aplicar colores de fondo
+                if c_idx in [21, 22]:
+                    cell.fill = PatternFill(start_color="f9e79f", end_color="f9e79f", fill_type="solid")
+                elif c_idx in [18, 19, 20]:
+                    cell.fill = PatternFill(start_color="aed6f1", end_color="aed6f1", fill_type="solid")
+
+                # Centrar valores
+                if c_idx in [2, 14]:
                     cell.alignment = Alignment(horizontal='center', vertical='center')
                 
-                # alinear a la derecha valores de columna  (columna 3, 15, 16, 17 y 18 en Excel)
-                if c_idx == 13:
-                    cell.alignment = Alignment(horizontal='right', vertical='center')
-
-                if c_idx == 15:
-                    cell.alignment = Alignment(horizontal='right', vertical='center')
-
-                if c_idx == 16:
-                    cell.alignment = Alignment(horizontal='right', vertical='center')
-
-                if c_idx == 17:
-                    cell.alignment = Alignment(horizontal='right', vertical='center')
-
-                if c_idx == 18:
+                # Alinear a la derecha
+                if c_idx in [13, 15, 16, 17, 18]:
                     cell.alignment = Alignment(horizontal='right', vertical='center')
         
         # Ajustar altura de encabezado
@@ -306,23 +295,10 @@ def estilos_excel(df, marca, precios_iguales, fecha):
                         bottom=Side(style='thin'))
         ws['V6'].border = thin_border
 
-        #FORMATEAR COMO MONEDA después de haber insertado todo
-        for col_letter in ['O', 'P', 'R', 'S', 'T', 'U', 'v', 'W']:  # Ajusta letras según tus columnas reales
-            for cell in ws[col_letter][7:]:  # desde fila 8 en adelante
-                cell.number_format = numbers.FORMAT_CURRENCY_USD_SIMPLE
 
-        #FORMATEAR CELDAS DE COLORES AMARILLO
-        for col_letter in ['U', 'V']:  # Ajusta letras según tus columnas reales
-            for cell in ws[col_letter][6:]:  # desde fila 7 en adelante
-                cell.fill = PatternFill(start_color="f9e79f", end_color="f9e79f", fill_type="solid")
-
-        #FORMATEAR CELDAS DE COLORES AZUL
-        for col_letter in ['R', 'S', 'T']:  # Ajusta letras según tus columnas reales
-            for cell in ws[col_letter][6:]:  # desde fila 7 en adelante
-                cell.fill = PatternFill(start_color="aed6f1", end_color="aed6f1", fill_type="solid")
 
     # Ajustar ancho de columnas (le puedes personalizar los anchos)
-    for col in ws.columns:
+    for col in ws.iter_cols(min_row=7, max_row=min(ws.max_row, 100)):
         max_length = 0
         column = col[0].column_letter  # Letra de columna
         for cell in col:
@@ -332,6 +308,7 @@ def estilos_excel(df, marca, precios_iguales, fecha):
             except:
                 pass
         adjusted_width = (max_length + 2)
+        if adjusted_width < 10: adjusted_width = 10
         ws.column_dimensions[column].width = adjusted_width
 
     # Antes de exportar, añade la columna de numeración
