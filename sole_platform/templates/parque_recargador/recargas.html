@@ -147,29 +147,53 @@ En esta sección podrás generar un reporte con la información sobre el parque 
 
 <div class="header-actions">
     <form action="{{ url_for('upload_parque_recargador') }}" method="POST" enctype="multipart/form-data" class="upload-form" id="recargasForm">
-        <div class="upload-container">
-            <div class="upload-actions">
+        <div class="upload-container" style="flex-direction: column; gap: 15px; padding: 20px;">
+            <div class="upload-actions" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
                 <div class="file-input-wrapper">
                     <div class="btn-file-custom">
                         <i class="fas fa-file-csv"></i>
-                        <span>Seleccionar archivo CSV</span>
+                        <span>CSV Recargas</span>
                     </div>
-                    <input type="file" id="finddoc" name="file_csv" accept=".csv" required onchange="updateFileName(this)">
+                    <input type="file" id="finddoc" name="file_csv" accept=".csv" required onchange="updateFileName(this, 'file-name')">
                 </div>
+
+                <div class="file-input-wrapper">
+                    <div class="btn-file-custom" style="background-color: #4CAF50;">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Excel Comisiones</span>
+                    </div>
+                    <input type="file" id="file_comisiones" name="file_comisiones" accept=".xlsx,.xls" onchange="updateFileName(this, 'file-comisiones-name')">
+                </div>
+
+                <select name="anio" id="anio" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; background-color: white; font-family: inherit; font-size: 0.95rem;">
+                    <option value="">Año de Comisiones...</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                </select>
+
                 <button type="submit" class="btn-add">
                     <i class="fas fa-upload"></i>
-                    Subir archivo
+                    Generar Reporte
                 </button>
             </div>
-            <div id="file-name" class="filename-display">No se ha seleccionado ningún archivo</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <div id="file-name" class="filename-display" style="margin:0;">No se ha seleccionado CSV</div>
+                <div id="file-comisiones-name" class="filename-display" style="margin:0;">No se ha seleccionado Excel</div>
+            </div>
         </div>
     </form>
 </div>
 
 <script>
-    function updateFileName(input) {
-        const fileName = input.files.length > 0 ? input.files[0].name : "No se ha seleccionado ningún archivo";
-        document.getElementById('file-name').textContent = fileName;
+    function updateFileName(input, targetId) {
+        const fileName = input.files.length > 0 ? input.files[0].name : "No se ha seleccionado archivo";
+        document.getElementById(targetId).textContent = fileName;
     }
 
     // Mostrar loader al enviar el formulario
@@ -197,7 +221,11 @@ En esta sección podrás generar un reporte con la información sobre el parque 
         <div class="kpi-value">${{ "{:,.2f}".format(resultados.total_pagar_altan) }} MXN</div>
     </div>
     <div class="kpi-card orange">
-        <div class="kpi-title">Ganancias del Mes</div>
+        <div class="kpi-title">Total Comisiones Pagadas</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.total_comisiones) }} MXN</div>
+    </div>
+    <div class="kpi-card orange">
+        <div class="kpi-title">Ganancias Netas</div>
         <div class="kpi-value">${{ "{:,.2f}".format(resultados.ganancia_mes) }} MXN</div>
     </div>
 </div>
@@ -210,10 +238,6 @@ En esta sección podrás generar un reporte con la información sobre el parque 
     <div class="kpi-card">
         <div class="kpi-title">Parque Recargador (Líneas)</div>
         <div class="kpi-value">{{ "{:,}".format(resultados.parque_r) }}</div>
-    </div>
-    <div class="kpi-card red">
-        <div class="kpi-title">Pago ALTAN por Ref (65%)</div>
-        <div class="kpi-value">${{ "{:,.2f}".format(resultados.total_altan) }}</div>
     </div>
     <div class="kpi-card red">
         <div class="kpi-title">Pago ALTAN por Parque</div>
@@ -229,6 +253,7 @@ En esta sección podrás generar un reporte con la información sobre el parque 
                 <tr>
                     <th>Marca</th>
                     <th style="text-align: right;">Total Líneas</th>
+                    <th style="text-align: right;">Porcentaje</th>
                 </tr>
             </thead>
             <tbody>
@@ -236,6 +261,7 @@ En esta sección podrás generar un reporte con la información sobre el parque 
                 <tr>
                     <td>{{ row['Marca'] }}</td>
                     <td style="text-align: right;">{{ "{:,}".format(row['Parque Recargador']) }}</td>
+                    <td style="text-align: right;">{{ "{:,.2f}".format(row['Porcentaje (%)']) }}%</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -263,12 +289,14 @@ En esta sección podrás generar un reporte con la información sobre el parque 
     </div>
 
     <div class="table-section">
-        <h3><i class="fas fa-dollar-sign"></i> Ingreso por Marca (MVNO)</h3>
+        <h3><i class="fas fa-dollar-sign"></i> Ingresos y Ganancia Neta por Marca</h3>
         <table class="custom-table">
             <thead>
                 <tr>
                     <th>Marca</th>
                     <th style="text-align: right;">Ingreso (MXN)</th>
+                    <th style="text-align: right;">Comisiones (MXN)</th>
+                    <th style="text-align: right;">Ganancia Neta (MXN)</th>
                 </tr>
             </thead>
             <tbody>
@@ -276,27 +304,8 @@ En esta sección podrás generar un reporte con la información sobre el parque 
                 <tr>
                     <td>{{ row['Marca'] }}</td>
                     <td style="text-align: right;">${{ "{:,.2f}".format(row['Ingreso']) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="table-section">
-        <h3><i class="fas fa-box"></i> Paquetes Más Recargados</h3>
-        <p style="color: #666; font-size: 0.9rem; margin-top: -10px; margin-bottom: 10px;">Total recargados: <strong>{{ "{:,}".format(resultados.total_paquetes) }}</strong></p>
-        <table class="custom-table">
-            <thead>
-                <tr>
-                    <th>Paquete</th>
-                    <th style="text-align: right;">Total Recargas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in resultados.paquetes_populares %}
-                <tr>
-                    <td>{{ row['Paquete'] }}</td>
-                    <td style="text-align: right;">{{ "{:,}".format(row['Total Recargas']) }}</td>
+                    <td style="text-align: right; color: #f44336;">-${{ "{:,.2f}".format(row['Comision']) }}</td>
+                    <td style="text-align: right;">${{ "{:,.2f}".format(row['Ganancia Neta']) }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

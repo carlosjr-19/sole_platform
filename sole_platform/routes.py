@@ -55,12 +55,15 @@ def init_app(app):
     @login_required
     def upload_parque_recargador():
         if 'file_csv' not in request.files:
-            flash("No se seleccionó ningún archivo", "warning")
+            flash("No se seleccionó el archivo de recargas", "warning")
             return redirect(url_for('parque_recargador'))
         
         file = request.files['file_csv']
+        file_comisiones = request.files.get('file_comisiones')
+        anio = request.form.get('anio')
+
         if file.filename == '':
-            flash("No se seleccionó ningún archivo", "warning")
+            flash("No se seleccionó el archivo de recargas", "warning")
             return redirect(url_for('parque_recargador'))
         
         if file and file.filename.endswith('.csv'):
@@ -72,9 +75,14 @@ def init_app(app):
                 file_path = os.path.join(upload_folder, file.filename)
                 file.save(file_path)
                 
+                comisiones_path = None
+                if file_comisiones and file_comisiones.filename != '':
+                    comisiones_path = os.path.join(upload_folder, file_comisiones.filename)
+                    file_comisiones.save(comisiones_path)
+
                 try:
                     # Procesar CSV
-                    resultados = spr.process_parque_recargador_csv(file_path)
+                    resultados = spr.process_parque_recargador_csv(file_path, comisiones_path, anio)
                     
                     if "error" in resultados:
                         flash(resultados["error"], "danger")
@@ -91,6 +99,8 @@ def init_app(app):
                     # Eliminar archivo después de procesar para no ocupar espacio
                     if os.path.exists(file_path):
                         os.remove(file_path)
+                    if comisiones_path and os.path.exists(comisiones_path):
+                        os.remove(comisiones_path)
                         
             except Exception as e:
                 flash(f"Error al procesar el archivo: {str(e)}", "danger")

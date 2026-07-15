@@ -3,11 +3,29 @@ import os
 import uuid
 from datetime import datetime
 
-def process_parque_recargador_csv(file_path):
+def process_parque_recargador_csv(file_path, comisiones_path=None, anio=None):
     try:
         archivo = pd.read_csv(file_path)
     except Exception as e:
         return {"error": f"Error al leer el archivo CSV: {str(e)}"}
+
+    # Filtrar msisdn que comiencen con 1
+    if 'msisdn' in archivo.columns:
+        archivo['msisdn'] = archivo['msisdn'].astype(str)
+        archivo = archivo[~archivo['msisdn'].str.startswith('1')]
+
+    # Cargar comisiones si están disponibles
+    comisiones_dict = {}
+    if comisiones_path and anio:
+        try:
+            df_comisiones = pd.read_excel(comisiones_path, sheet_name=str(anio))
+            if 'CLIENTE' in df_comisiones.columns and 'TOTAL' in df_comisiones.columns:
+                for index, row in df_comisiones.iterrows():
+                    cliente = str(row['CLIENTE']).strip().lower()
+                    if pd.notna(row['TOTAL']) and cliente != 'total' and cliente != 'nan':
+                        comisiones_dict[cliente] = float(row['TOTAL'])
+        except Exception as e:
+            print(f"Error procesando archivo de comisiones: {e}")
 
     # Asegurar que existan las columnas necesarias, si no, usar valores por defecto o fallar con gracia
     if 'altan_name' not in archivo.columns:
@@ -34,6 +52,14 @@ def process_parque_recargador_csv(file_path):
     
     parque_por_marca_df = n_archivo['name'].value_counts().reset_index()
     parque_por_marca_df.columns = ['Marca', 'Parque Recargador']
+    
+    # Agregar porcentaje
+    if parque_r > 0:
+        parque_por_marca_df['Porcentaje (%)'] = (parque_por_marca_df['Parque Recargador'] / parque_r) * 100
+        parque_por_marca_df['Porcentaje (%)'] = parque_por_marca_df['Porcentaje (%)'].round(2)
+    else:
+        parque_por_marca_df['Porcentaje (%)'] = 0.0
+
     parque_por_marca = parque_por_marca_df.to_dict('records')
 
     # 5. Paquetes más recargados en general (usando altan_name)
@@ -45,7 +71,17 @@ def process_parque_recargador_csv(file_path):
     # 6. Ingreso por recargas totales de cada marca con el precio de referencia (mvno_price)
     precios_por_nombre_df = archivo.groupby('name')['mvno_price'].sum().reset_index()
     precios_por_nombre_df.columns = ['Marca', 'Ingreso']
+    
+    def calcular_ganancia_neta(row):
+        ingreso = row['Ingreso']
+        marca_lower = str(row['Marca']).strip().lower()
+        comision = comisiones_dict.get(marca_lower, 0.0)
+        return pd.Series([comision, ingreso - comision])
+        
+    precios_por_nombre_df[['Comision', 'Ganancia Neta']] = precios_por_nombre_df.apply(calcular_ganancia_neta, axis=1)
     precios_por_nombre_df['Ingreso'] = precios_por_nombre_df['Ingreso'].round(2)
+    precios_por_nombre_df['Comision'] = precios_por_nombre_df['Comision'].round(2)
+    precios_por_nombre_df['Ganancia Neta'] = precios_por_nombre_df['Ganancia Neta'].round(2)
     precios_por_nombre = precios_por_nombre_df.to_dict('records')
 
     # 7. Total que se le paga altan por precio de referencia
@@ -57,8 +93,12 @@ def process_parque_recargador_csv(file_path):
     # 9. Total a pagar a ALTAN
     total = round(total_altan + total_parque, 2)
 
-    # 10. Ganancias del mes por recargas
-    ganancia = round(precio_m - total, 2)
+    # 10. Total comisiones
+    total_comisiones = sum(comisiones_dict.values())
+    total_comisiones = round(total_comisiones, 2)
+
+    # 11. Ganancias del mes por recargas
+    ganancia = round(precio_m - total - total_comisiones, 2)
 
     return {
         'precio_r': precio_r,
@@ -73,6 +113,7 @@ def process_parque_recargador_csv(file_path):
         'total_altan': total_altan,
         'total_parque': total_parque,
         'total_pagar_altan': total,
+        'total_comisiones': total_comisiones,
         'ganancia_mes': ganancia
     }
 
@@ -91,19 +132,19 @@ def generar_excel_parque(resultados, download_folder):
             'Ingreso Total (Precio MVNO)',
             'Total de Recargas Realizadas',
             'Total Parque Recargador (Líneas)',
-            'Pago a ALTAN por Ref (65%)',
             'Pago a ALTAN por Parque',
             'Total a Pagar a ALTAN',
-            'Ganancias del Mes'
+            'Total Comisiones Pagadas',
+            'Ganancias Netas'
         ],
         'Valor': [
             resultados['precio_r'],
             resultados['precio_m'],
             resultados['total_recargas'],
             resultados['parque_r'],
-            resultados['total_altan'],
             resultados['total_parque'],
             resultados['total_pagar_altan'],
+            resultados['total_comisiones'],
             resultados['ganancia_mes']
         ]
     }
@@ -118,9 +159,6 @@ def generar_excel_parque(resultados, download_folder):
     # 4. Ingreso por Marca
     df_ingresos = pd.DataFrame(resultados['precios_por_nombre'])
 
-    # 5. Paquetes (altan_name)
-    df_paquetes = pd.DataFrame(resultados['paquetes_populares'])
-
     # Guardar en Excel
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"reporte_parque_recargador_{timestamp}.xlsx"
@@ -130,8 +168,7 @@ def generar_excel_parque(resultados, download_folder):
         df_resumen.to_excel(writer, sheet_name='Resumen', index=False)
         df_parque.to_excel(writer, sheet_name='Parque por Marca', index=False)
         df_recargas.to_excel(writer, sheet_name='Recargas por Marca', index=False)
-        df_ingresos.to_excel(writer, sheet_name='Ingreso por Marca', index=False)
-        df_paquetes.to_excel(writer, sheet_name='Paquetes', index=False)
+        df_ingresos.to_excel(writer, sheet_name='Ingreso y Ganancia', index=False)
         
         # Ajustar ancho de columnas automáticamente si es posible
         for sheet_name in writer.sheets:
