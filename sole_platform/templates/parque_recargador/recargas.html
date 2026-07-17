@@ -165,6 +165,14 @@ En esta sección podrás generar un reporte con la información sobre el parque 
                     <input type="file" id="file_comisiones" name="file_comisiones" accept=".xlsx,.xls" onchange="updateFileName(this, 'file-comisiones-name')">
                 </div>
 
+                <div class="file-input-wrapper">
+                    <div class="btn-file-custom" style="background-color: #ff9800;">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Portabilidades</span>
+                    </div>
+                    <input type="file" id="file_portabilidades" name="file_portabilidades" accept=".xlsx,.xls" onchange="updateFileName(this, 'file-portabilidades-name')">
+                </div>
+
                 <select name="anio" id="anio" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; background-color: white; font-family: inherit; font-size: 0.95rem;">
                     <option value="">Año de Comisiones...</option>
                     <option value="2022">2022</option>
@@ -184,7 +192,8 @@ En esta sección podrás generar un reporte con la información sobre el parque 
             
             <div style="display: flex; flex-direction: column; gap: 5px;">
                 <div id="file-name" class="filename-display" style="margin:0;">No se ha seleccionado CSV</div>
-                <div id="file-comisiones-name" class="filename-display" style="margin:0;">No se ha seleccionado Excel</div>
+                <div id="file-comisiones-name" class="filename-display" style="margin:0;">No se ha seleccionado Excel Comisiones</div>
+                <div id="file-portabilidades-name" class="filename-display" style="margin:0;">No se ha seleccionado Excel Portabilidades</div>
             </div>
         </div>
     </form>
@@ -225,6 +234,10 @@ En esta sección podrás generar un reporte con la información sobre el parque 
         <div class="kpi-value">${{ "{:,.2f}".format(resultados.total_comisiones) }} MXN</div>
     </div>
     <div class="kpi-card orange">
+        <div class="kpi-title">Ganancias Brutas</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(resultados.ganancia_bruta) }} MXN</div>
+    </div>
+    <div class="kpi-card purple">
         <div class="kpi-title">Ganancias Netas</div>
         <div class="kpi-value">${{ "{:,.2f}".format(resultados.ganancia_mes) }} MXN</div>
     </div>
@@ -289,13 +302,15 @@ En esta sección podrás generar un reporte con la información sobre el parque 
     </div>
 
     <div class="table-section">
-        <h3><i class="fas fa-dollar-sign"></i> Ingresos y Ganancia Neta por Marca</h3>
+        <h3><i class="fas fa-dollar-sign"></i> Ingresos y Ganancia por Marca</h3>
         <table class="custom-table">
             <thead>
                 <tr>
                     <th>Marca</th>
                     <th style="text-align: right;">Ingreso (MXN)</th>
                     <th style="text-align: right;">Comisiones (MXN)</th>
+                    <th style="text-align: right;">Pago Altan (MXN)</th>
+                    <th style="text-align: right;">Portabilidades</th>
                     <th style="text-align: right;">Ganancia Neta (MXN)</th>
                 </tr>
             </thead>
@@ -305,7 +320,29 @@ En esta sección podrás generar un reporte con la información sobre el parque 
                     <td>{{ row['Marca'] }}</td>
                     <td style="text-align: right;">${{ "{:,.2f}".format(row['Ingreso']) }}</td>
                     <td style="text-align: right; color: #f44336;">-${{ "{:,.2f}".format(row['Comision']) }}</td>
+                    <td style="text-align: right; color: #f44336;">-${{ "{:,.2f}".format(row['Pago Altan']) }}</td>
+                    <td style="text-align: right;">{{ row['Portabilidades Str'] }}</td>
                     <td style="text-align: right;">${{ "{:,.2f}".format(row['Ganancia Neta']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-section">
+        <h3><i class="fas fa-chart-pie"></i> Margen de Ganancia por Marca</h3>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th style="text-align: right;">Margen (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in resultados.margen_por_marca %}
+                <tr>
+                    <td>{{ row['Marca'] }}</td>
+                    <td style="text-align: right;">{{ "{:,.2f}".format(row['Margen (%)']) }}%</td>
                 </tr>
                 {% endfor %}
             </tbody>

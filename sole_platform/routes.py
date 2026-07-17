@@ -60,6 +60,7 @@ def init_app(app):
         
         file = request.files['file_csv']
         file_comisiones = request.files.get('file_comisiones')
+        file_portabilidades = request.files.get('file_portabilidades')
         anio = request.form.get('anio')
 
         if file.filename == '':
@@ -80,9 +81,14 @@ def init_app(app):
                     comisiones_path = os.path.join(upload_folder, file_comisiones.filename)
                     file_comisiones.save(comisiones_path)
 
+                portabilidades_path = None
+                if file_portabilidades and file_portabilidades.filename != '':
+                    portabilidades_path = os.path.join(upload_folder, file_portabilidades.filename)
+                    file_portabilidades.save(portabilidades_path)
+
                 try:
                     # Procesar CSV
-                    resultados = spr.process_parque_recargador_csv(file_path, comisiones_path, anio)
+                    resultados = spr.process_parque_recargador_csv(file_path, comisiones_path, anio, portabilidades_path)
                     
                     if "error" in resultados:
                         flash(resultados["error"], "danger")
@@ -101,6 +107,8 @@ def init_app(app):
                         os.remove(file_path)
                     if comisiones_path and os.path.exists(comisiones_path):
                         os.remove(comisiones_path)
+                    if portabilidades_path and os.path.exists(portabilidades_path):
+                        os.remove(portabilidades_path)
                         
             except Exception as e:
                 flash(f"Error al procesar el archivo: {str(e)}", "danger")
