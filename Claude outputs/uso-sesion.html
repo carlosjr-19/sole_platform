@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Uso de esta sesión</title>
+<style>
+  :root{ color-scheme: light; }
+  body{
+    margin:0; padding:24px 20px;
+    background:#f9f9f7;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color:#0b0b0b;
+  }
+  @media (prefers-color-scheme: dark){
+    body{ background:#0d0d0d; color:#ffffff; }
+  }
+  .card{
+    max-width:640px; margin:0 auto;
+    background:#fcfcfb;
+    border:1px solid rgba(11,11,11,0.10);
+    border-radius:12px;
+    padding:22px 24px 18px;
+  }
+  @media (prefers-color-scheme: dark){
+    .card{ background:#1a1a19; border-color:rgba(255,255,255,0.10); }
+  }
+  h1{ font-size:16px; font-weight:600; margin:0 0 4px; }
+  .sub{ font-size:13px; color:#52514e; margin:0 0 20px; }
+  @media (prefers-color-scheme: dark){ .sub{ color:#c3c2b7; } }
+  .row{ display:flex; align-items:center; gap:10px; margin-bottom:11px; }
+  .label{ width:230px; flex-shrink:0; font-size:12.5px; color:#0b0b0b; text-align:right; }
+  @media (prefers-color-scheme: dark){ .label{ color:#ffffff; } }
+  .track{ flex:1; background:#e1e0d9; border-radius:4px; height:14px; position:relative; }
+  @media (prefers-color-scheme: dark){ .track{ background:#2c2c2a; } }
+  .fill{ background:#2a78d6; height:14px; border-radius:4px; }
+  @media (prefers-color-scheme: dark){ .fill{ background:#3987e5; } }
+  .pct{ width:46px; flex-shrink:0; font-size:12.5px; color:#52514e; font-variant-numeric: tabular-nums; }
+  @media (prefers-color-scheme: dark){ .pct{ color:#c3c2b7; } }
+  .foot{ font-size:11.5px; color:#898781; margin-top:14px; border-top:1px solid #e1e0d9; padding-top:12px; }
+  @media (prefers-color-scheme: dark){ .foot{ border-color:#2c2c2a; } }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>En qué se fue el consumo de esta sesión</h1>
+  <p class="sub">Peso relativo aproximado de cada tipo de actividad</p>
+  <div id="chart"></div>
+  <div class="foot">Cálculo aproximado a partir del historial de esta conversación.</div>
+</div>
+<script>
+const data = [
+  ["Instrucciones y respuestas de Claude", 44.2],
+  ["Tu computadora (leer archivos del proyecto)", 13.7],
+  ["Guardar avances en el proyecto", 13.6],
+  ["Cargar herramientas nuevas", 6.0],
+  ["Borradores de Gmail", 4.7],
+  ["Preguntas para ti", 4.5],
+  ["Comandos en la terminal", 4.2],
+  ["Publicar la guía interactiva", 3.8],
+  ["Cargar skills (diseño, uso, etc.)", 2.7],
+  ["Buscar herramientas disponibles", 2.6],
+];
+const max = Math.max(...data.map(d => d[1]));
+const chart = document.getElementById('chart');
+data.forEach(([label, pct]) => {
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.innerHTML = `
+    <div class="label">${label}</div>
+    <div class="track"><div class="fill" style="width:${(pct/max*100).toFixed(1)}%"></div></div>
+    <div class="pct">${pct.toFixed(1)}%</div>
+  `;
+  chart.appendChild(row);
+});
+</script>
+</body>
+</html>

@@ -2,22 +2,18 @@ from flask import render_template, redirect, request, jsonify, send_file, flash,
 from flask import current_app
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
-from .services.commissions import report_act as ra
-from .services.commissions import report_rec as rr
-from .services.commissions import clean_folders as clean
-from .services.portOuts import portouts as bp
-from .services.returns import process_returns as pr
-from .services.contracargos import process_contracargos as pc
-from .services.parque_recargador import parque_recargador as spr
 from .models.ModelsContracargos import ModelContracargo
 from .models.modelsDevoluciones import ModelDevolucion
 from .models.entities.contracargos import Contracargo
 from .models.entities.devoluciones import Devolucion
 from .models.ModelsUsers import ModelUser
 from . import db
-import polars as pl
-import pandas as pd
 import os
+
+# Nota: los imports de pandas/polars y de los módulos de sole_platform/services/
+# se mueven a dentro de cada función que los usa (import perezoso / lazy import).
+# Así, si una ruta que genera reportes nunca se llega a usar, esas librerías
+# (pesadas: pandas, polars, openpyxl, pyarrow) nunca se cargan en memoria.
 
 def init_app(app):
 
@@ -43,6 +39,7 @@ def init_app(app):
     @app.route("/portouts/")
     @login_required
     def portouts():
+        from .services.portOuts import portouts as bp
         mvnos = bp.lista_mvnos()
         return render_template('portOuts/portouts.html', active_page="portouts", mvnos=mvnos)
 
@@ -54,6 +51,7 @@ def init_app(app):
     @app.route('/upload_parque_recargador', methods=['POST'])
     @login_required
     def upload_parque_recargador():
+        from .services.parque_recargador import parque_recargador as spr
         if 'file_csv' not in request.files:
             flash("No se seleccionó el archivo de recargas", "warning")
             return redirect(url_for('parque_recargador'))
@@ -348,6 +346,11 @@ def init_app(app):
     @app.route('/commissions', methods = ['POST'])
     @login_required
     def form_comisiones():
+        from .services.commissions import report_act as ra
+        from .services.commissions import report_rec as rr
+        from .services.commissions import clean_folders as clean
+        import polars as pl
+        import pandas as pd
         if request.method == 'POST':
 
             UPLOAD_FOLDER = current_app.config['UPLOAD_FOLDER']
@@ -532,6 +535,7 @@ def init_app(app):
     @app.route('/form_portouts', methods=['POST'])
     @login_required
     def form_portouts():
+        from .services.portOuts import portouts as bp
 
         if request.method == 'POST':
             mvno = request.form.get('mvno')
@@ -557,6 +561,8 @@ def init_app(app):
     @app.route('/download_portouts', methods=['POST'])
     @login_required
     def download_portouts():
+        from .services.commissions import clean_folders as clean
+        from .services.portOuts import portouts as bp
         mvno = request.form.get('mvno')
         fecha_desde = request.form.get('fecha_desde')
         fecha_hasta = request.form.get('fecha_hasta')
@@ -587,6 +593,7 @@ def init_app(app):
     @app.route('/upload_returns', methods=['POST'])
     @login_required
     def upload_returns():
+        from .services.returns import process_returns as pr
         if 'file_csv' not in request.files:
             flash("No se seleccionó ningún archivo", "warning")
             return redirect(url_for('returns'))
@@ -637,6 +644,7 @@ def init_app(app):
     @app.route('/upload_contracargos', methods=['POST'])
     @login_required
     def upload_contracargos():
+        from .services.contracargos import process_contracargos as pc
         if 'file_csv' not in request.files:
             flash("No se seleccionó ningún archivo", "warning")
             return redirect(url_for('list_contracargos'))
